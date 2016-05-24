@@ -1,4 +1,4 @@
-### reactInit
+#### reactInit
 
 #### 环境
 
@@ -13,3 +13,8 @@
 
 - 可在console 中打AppActions.setToast({type:'confirm',content:'确认删除嘛？'})
 - AppActions.showLoading()
+
+
+
+
+    

@@ -14,10 +14,10 @@
         </script>
         <script>
         (function(){
-            // //注册请求
+            //注册请求
             // $.ajax({
             //     url:"/graduationDesign/api/lostAndFound/reg",
-            //     dataType:"jsonp",
+            //     //dataType:"jsonp",
             //     data:{
             //         name:"lalalal",
             //         password:"apcdefg",
@@ -30,17 +30,17 @@
             // });
 
             // //登陆请求
-            // $.ajax({
-            //     url:"/graduationDesign/api/lostAndFound/login",
-            //     dataType:"jsonp",
-            //     data:{
-            //         phone:"00000000000",
-            //         password:"apcdefg"
-            //     },
-            //     success:function(data) {
-            //         console.log(data)
-            //     }
-            // });
+            $.ajax({
+                url:"/graduationDesign/api/lostAndFound/login",
+                dataType:"jsonp",
+                data:{
+                    phone:"00000000000",
+                    password:"apcdefg"
+                },
+                success:function(data) {
+                    console.log(data)
+                }
+            });
 
             //// 注销
             // $.ajax({
@@ -58,11 +58,11 @@
             //     url:"/graduationDesign/api/lostAndFound/post",
             //     dataType:"jsonp",
             //     data:{
-            //         des:"我丢了一把钥匙",
-            //         type:"lost",
-            //         itemType:"钥匙",
+            //         des:"我找到一个索尼的相机，看上去很值钱。",
+            //         type:"found",
+            //         itemType:"电子产品",
             //         Ltime:"2016-3-14",
-            //         area:"4号楼"
+            //         area:"6号楼"
             //     },
             //     success:function(data) {
             //         console.log(data)

@@ -1,89 +1,33 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>我的生活</title>
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-    <link rel="shortcut icon" href="/favicon.ico">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
-    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css">
-
-  </head>
-  <body>
-    <div class="page-group">
-        <div class="page page-current">
-            <div class="page">
-              <header class="bar bar-nav">
-                <a class="button button-link button-nav pull-left" href="/demos/card" data-transition='slide-out'>
-                  <span class="icon icon-left"></span>
-                  返回
-                </a>
-                <h1 class="title">我的生活</h1>
-              </header>
-              <nav class="bar bar-tab">
-                <a class="tab-item active" href="#">
-                  <span class="icon icon-home"></span>
-                  <span class="tab-label">首页</span>
-                </a>
-                <a class="tab-item" href="#">
-                  <span class="icon icon-me"></span>
-                  <span class="tab-label">我</span>
-                </a>
-                <a class="tab-item" href="#">
-                  <span class="icon icon-star"></span>
-                  <span class="tab-label">收藏</span>
-                </a>
-                <a class="tab-item" href="#">
-                  <span class="icon icon-settings"></span>
-                  <span class="tab-label">设置</span>
-                </a>
-              </nav>
-              <div class="content">
-                <div class="page-index">
-                    <div class="card">
-                        <div style="background-image:url(//gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250.3.0q60.jpg)" valign="bottom" class="card-header color-white no-border">旅途的山</div>
-                        <div class="card-content">
-                          <div class="card-content-inner">
-                            <p class="color-gray">发表于 2015/01/15</p>
-                            <p>此处是内容...</p>
-                          </div>
-                        </div>
-                        <div class="card-footer">
-                          <a href="#" class="link">赞</a>
-                          <a href="#" class="link">更多</a>
-                        </div>
-                      </div>
-                      <div class="card">
-                        <div style="background-image:url(//gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250.3.0q60.jpg)" valign="bottom" class="card-header color-white no-border">旅途的山</div>
-                        <div class="card-content">
-                          <div class="card-content-inner">
-                            <p class="color-gray">发表于 2015/01/15</p>
-                            <p>此处是内容...</p>
-                          </div>
-                        </div>
-                        <div class="card-footer">
-                          <a href="#" class="link">赞</a>
-                          <a href="#" class="link">更多</a>
-                        </div>
-                      </div>
-                      ... 可以多放几张卡片
-                    </div>
-              </div>
-            </div>
-
-
-        </div>
+<head>
+    <meta charset="utf-8" />
+    <!--允许全屏-->
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="yes" name="apple-touch-fullscreen" />
+    <meta content="telephone=no,email=no" name="format-detection" />
+    <meta name="flexible" />
+    <meta content="modeName=750-12" name="grid" />
+    <title>满减</title>
+    <link rel="stylesheet" href="../build/index.debug.css" />
+    <script>
+        //flexible
+        !function(){var a="",b=document.createElement("style");if(document.getElementsByTagName("head")[0].appendChild(b),b.styleSheet)b.styleSheet.disabled||(b.styleSheet.cssText=a);else try{b.innerHTML=a}catch(c){b.innerText=a}}();!function(a,b){function c(){var b=f.getBoundingClientRect().width;b/i>540&&(b=540*i);var c=b/10;f.style.fontSize=c+"px",k.rem=a.rem=c}var d,e=a.document,f=e.documentElement,g=e.querySelector('meta[name="viewport"]'),h=e.querySelector('meta[name="flexible"]'),i=0,j=0,k=b.flexible||(b.flexible={});if(g){console.warn("将根据已有的meta标签来设置缩放比例");var l=g.getAttribute("content").match(/initial\-scale=([\d\.]+)/);l&&(j=parseFloat(l[1]),i=parseInt(1/j))}else if(h){var m=h.getAttribute("content");if(m){var n=m.match(/initial\-dpr=([\d\.]+)/),o=m.match(/maximum\-dpr=([\d\.]+)/);n&&(i=parseFloat(n[1]),j=parseFloat((1/i).toFixed(2))),o&&(i=parseFloat(o[1]),j=parseFloat((1/i).toFixed(2)))}}if(!i&&!j){var p=(a.navigator.appVersion.match(/android/gi),a.navigator.appVersion.match(/iphone/gi)),q=a.devicePixelRatio;i=p?q>=3&&(!i||i>=3)?3:q>=2&&(!i||i>=2)?2:1:1,j=1/i}if(f.setAttribute("data-dpr",i),!g)if(g=e.createElement("meta"),g.setAttribute("name","viewport"),g.setAttribute("content","initial-scale="+j+", maximum-scale="+j+", minimum-scale="+j+", user-scalable=no"),f.firstElementChild)f.firstElementChild.appendChild(g);else{var r=e.createElement("div");r.appendChild(g),e.write(r.innerHTML)}a.addEventListener("resize",function(){clearTimeout(d),d=setTimeout(c,300)},!1),a.addEventListener("pageshow",function(a){a.persisted&&(clearTimeout(d),d=setTimeout(c,300))},!1),"complete"===e.readyState?e.body.style.fontSize=12*i+"px":e.addEventListener("DOMContentLoaded",function(){e.body.style.fontSize=12*i+"px"},!1),c(),k.dpr=a.dpr=i,k.refreshRem=c,k.rem2px=function(a){var b=parseFloat(a)*this.rem;return"string"==typeof a&&a.match(/rem$/)&&(b+="px"),b},k.px2rem=function(a){var b=parseFloat(a)/this.rem;return"string"==typeof a&&a.match(/px$/)&&(b+="rem"),b}}(window,window.lib||(window.lib={})); 
+    </script>
+</head>
+<body>
+    <div class="wrap" id="content">
     </div>
 
-    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
-    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
-    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
-    <script type="text/javascript">
-        $.init()
-    </script>
-  </body>
+    <script type="text/javascript" src="../basejs/loading.js"></script>
+    <script type="text/javascript" src="../basejs/zepto-min.js"></script>
+    <script src="../basejs/fastclick.js"></script>
+    <script type="text/javascript" src="../basejs/react.min.js"></script>
+    <script type="text/javascript" src="../basejs/react-dom.min.js"></script>
+    <script type="text/javascript" src="../basejs/img.js"></script>
+    <script type="text/javascript" src="../build/index.debug.js"></script>
+
+</body>
+
 </html>

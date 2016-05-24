@@ -256,6 +256,27 @@ module.exports = function(app) {
       });
     });
 
+    //判断是否登录
+    app.get('/graduationDesign/api/lostAndFound/getUserOwn',function (req,res) {
+        var params = url.parse(req.url,true);
+        var query = params.query;
+        if(!req.session.user) {
+          var data = {
+              status:false,
+              message:"请登录"
+          };
+          lib.sendData(params,data,res);
+          return;
+        }else {
+          var data = {
+              status:true,
+              message:"登录中"
+          };
+          lib.sendData(params,data,res);
+          return;
+        }
+    });
+
     //获取用户的个人信息 和自己的发布过的信息
     /*
       需要登录

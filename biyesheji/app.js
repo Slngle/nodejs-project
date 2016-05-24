@@ -27,7 +27,7 @@ app.use(flash());
 app.use(session({
   secret: settings.cookieSecret,
   key: settings.db,//cookie name
-  cookie: {maxAge: 1000 * 60 * 60 * 24 * 7},//30 days
+  cookie: {maxAge: 1000 * 60 * 60 * 24 * 7},//7 days
   store: new MongoStore({
     db: settings.db,
     host: settings.host,

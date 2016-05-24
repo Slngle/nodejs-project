@@ -1,0 +1,18 @@
+.webkit-sticky {
+	position: -webkit-sticky;
+	width:100%;
+	top:128px;/*px*/
+	z-index:5;
+	height:82px;
+}
+
+.webkit-sticky-fixed-wrap {
+	z-index:5;
+}
+
+.nav-in-active {
+	position: fixed;
+	left:0;
+	top:88px;/*px*/
+	width:100%;
+}

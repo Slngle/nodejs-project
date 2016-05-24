@@ -1,4 +1,3 @@
-//gulpfile.js
 var gulp = require('gulp'),
     uglify = require("gulp-uglify"),
     minifyCss = require("gulp-minify-css"),
@@ -55,6 +54,13 @@ gulp.task('style',['imagemin'],function() {
         .on('error', function (err) {
             console.error('Error!', err.message);
         })
+        .pipe(px2rem({
+          baseDpr: 2,            
+          threeVersion: false,    
+          remVersion: true,      
+          remUnit: 75,           
+          remPrecision: 6         
+        }))
 
         .pipe(base64({
             baseDir: 'build',

@@ -86,7 +86,7 @@ Post.getTen = function(queryThing, page, callback) {
         query = queryThing;
       }
       collection.count(query, function (err, total) {
-          collection.find(query).sort({time:-1}).skip((page - 1)*10).limit(10).toArray(function(err,docs) {
+          collection.find(query).sort({time:-1}).skip((page - 1)*20).limit(20).toArray(function(err,docs) {
               mongodb.close();
               if(err) {
                 callback(err);

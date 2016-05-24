@@ -1,0 +1,16 @@
+.goUp {
+	position:fixed;
+	right:34px;
+	bottom:145px;
+	z-index:10;
+	background:rgba(255,255,255,.89);
+	border:2px solid #dbdbdb;/*px*/
+	box-shadow:1px 4px 10px rgba(153, 153, 153, 0.5);/*px*/
+	width:86px;
+	height:86px;
+	border-radius:100%;
+	background-position:center center;
+    background-repeat:no-repeat;
+    background-image:url('../build/img/top.png');
+    background-size:40px 40px;
+}

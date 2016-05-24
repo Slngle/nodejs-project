@@ -1,0 +1,48 @@
+.shoppingCart {
+	position: fixed;
+	right:34px;
+	bottom:30px;
+	width:86px;
+	height:86px;
+	border: 2px solid #d1d1d1;/*px*/
+    border-radius: 50%;
+    background-color: rgba(255,255,255,.8);
+    box-shadow: 1px 4px 10px rgba(153,153,153,.5);/*px*/
+    z-index:10;
+    background-position:center center;
+    background-repeat:no-repeat;
+    background-image:url('../build/img/iconfont-gouwuche.png');
+    background-size:40px 40px; 
+}
+
+.redCircle {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    background-color: #fa4100;
+    transition:all .8s;
+    z-index:9;
+    -webkit-transform: translate3d(0px,0px,0px);
+    text-align:center;
+    line-height:30px;
+    font-size: 22px;
+    color:#fff;
+}
+
+.shoppingCartNumber {
+	font-size: 22px;
+    line-height: 30px;
+    position: absolute;
+    top: 16px;
+    right: 10px;
+    visibility: hidden;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    color: #fff;
+    border-radius: 50%;
+    background: #fa4100;
+}
