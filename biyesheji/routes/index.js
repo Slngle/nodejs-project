@@ -4,7 +4,26 @@ var crypto = require('crypto'),
     Comment = require('../models/comment.js'),
     url = require('url');
 var lib = require('../lib/index.js');
+var fs = require('fs');
 module.exports = function(app) {
+     /*
+        图片get请求的映射
+    */   
+    app.get("/public/images/:image",function(request,response) {
+      var imageName = "./public/images/"+request.params.image;
+      fs.readFile(imageName, "binary", function(error, file) { 
+        if(error) { 
+          response.writeHead(500, {"Content-Type": "text/plain"}); 
+          response.write(error + "\n"); 
+          response.end(); 
+        } else { 
+          response.writeHead(200, {"Content-Type": "image/png"}); 
+          response.write(file, "binary"); 
+          response.end(); 
+        } 
+      }); 
+
+    });
     /*
         失物招领注册逻辑
         name        注册名
@@ -170,7 +189,8 @@ module.exports = function(app) {
           var itemType = query && query.itemType;
           var Ltime = query && query.Ltime;
           var area  = query && query.area;
-          var PostList = new Post(name,phone,des,type,itemType,Ltime,area);
+          var ttimg = query && query.ttimg;
+          var PostList = new Post(name,phone,des,type,itemType,Ltime,area,ttimg);
           PostList.save(function(err) {
               if(err) {
                   var data = {
@@ -257,7 +277,7 @@ module.exports = function(app) {
     });
 
     //判断是否登录
-    app.get('/graduationDesign/api/lostAndFound/getUserOwn',function (req,res) {
+    app.get('/graduationDesign/api/lostAndFound/isLogin',function (req,res) {
         var params = url.parse(req.url,true);
         var query = params.query;
         if(!req.session.user) {
@@ -409,6 +429,26 @@ module.exports = function(app) {
       }
     });
 
+    //上传图片
+    
+    app.post('/graduationDesign/api/lostAndFound/upload_file',function (req,res) {
+      var params = url.parse(req.url,true);
+      var query = params.query;
+
+      var imgUrl = req.files.file.path;
+      if(imgUrl) {
+        res.send({
+            status:true,
+            url:imgUrl
+        });        
+      }else {
+        res.send({
+            status:false,
+            message:"上传失败"
+        });
+      }
+
+    });
 
 //   app.get('/', function (req, res) {
 //     //判断是否是第一页，并把请求的页数转换成 number 类型

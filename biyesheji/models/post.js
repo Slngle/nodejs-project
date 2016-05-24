@@ -1,7 +1,7 @@
 var mongodb = require('./db'),
 markdown = require('markdown').markdown;
 var lib = require('../lib/index.js');
-function Post(name,phone,des,type,itemType,Ltime,area) {
+function Post(name,phone,des,type,itemType,Ltime,area,ttimg) {
     this.name = name;
     this.phone = phone;
     this.des = des;
@@ -9,6 +9,7 @@ function Post(name,phone,des,type,itemType,Ltime,area) {
     this.itemType = itemType;
     this.Ltime = Ltime;
     this.area = area;
+    this.ttimg = ttimg;
 }
 
 module.exports = Post;
@@ -41,7 +42,8 @@ Post.prototype.save = function(callback) {
       tags: [this.itemType,this.area,this.Ltime],
       ArticleID: ArticleID,
       pv:0,
-      isover:"false"
+      isover:"false",
+      ttimg:this.ttimg
   };
   //打开数据库
   mongodb.open(function (err, db) {

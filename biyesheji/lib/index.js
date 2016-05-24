@@ -12,11 +12,12 @@ lib.sendData = function(request,data,res) {
 
 //生成随机数
 lib.randomData = function(num) {
+	var oDate = new Date();
 	var str = '';
 	for(var i = 0;i < num;i++) {
 		str += parseInt(Math.random()*10);
 	}
-	return str;
+	return (oDate.getTime().toString() + str);
 }
 
 module.exports = lib;

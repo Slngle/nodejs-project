@@ -29,29 +29,29 @@
             //     }
             // });
 
-            // //登陆请求
-            $.ajax({
-                url:"/graduationDesign/api/lostAndFound/login",
-                dataType:"jsonp",
-                data:{
-                    phone:"00000000000",
-                    password:"apcdefg"
-                },
-                success:function(data) {
-                    console.log(data)
-                }
-            });
-
-            //// 注销
+            // // //登陆请求
             // $.ajax({
-            //     url:"/graduationDesign/api/lostAndFound/logout",
+            //     url:"/graduationDesign/api/lostAndFound/login",
             //     dataType:"jsonp",
             //     data:{
+            //         phone:"00000000000",
+            //         password:"apcdefg"
             //     },
             //     success:function(data) {
             //         console.log(data)
             //     }
             // });
+
+            // 注销
+            $.ajax({
+                url:"/graduationDesign/api/lostAndFound/logout",
+                dataType:"jsonp",
+                data:{
+                },
+                success:function(data) {
+                    console.log(data)
+                }
+            });
 
             // // 发布
             // $.ajax({

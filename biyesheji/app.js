@@ -9,19 +9,23 @@ var routes = require('./routes/index');
 var settings = require('./settings');
 var flash = require('connect-flash');
 var multer  = require('multer');
-
+var lib = require('./lib/index.js');
 var app = express();
 
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 
-app.listen(3009);
+app.all('*', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+    res.header("X-Powered-By",' 3.2.1')
+    res.header("Content-Type", "application/json;charset=utf-8");
+    next();
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-
-app.use('/', express.static(__dirname + '/www'));
-
 app.set('view engine', 'ejs');
 app.use(flash());
 app.use(session({
@@ -38,7 +42,8 @@ app.use(session({
 app.use(multer({
   dest: './public/images',
   rename: function (fieldname, filename) {
-    return filename;
+    var newname = lib.randomData(10);
+    return newname;
   }
 }));
 //模块实现了将会化信息存储到mongoldb中。secret 用来防止篡改 cookie，
@@ -55,6 +60,5 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 routes(app);
 module.exports = app;
