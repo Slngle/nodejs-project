@@ -227,10 +227,11 @@ module.exports = function(app) {
     app.get('/graduationDesign/api/lostAndFound/getPosts',function (req,res) {
       var params = url.parse(req.url,true);
       var query = params.query;
-      var queryThing = query && query.queryThing && JSON.parse(query.queryThing);
+      var queryThing = query && query.queryThing && decodeURIComponent(decodeURIComponent(query.queryThing)) && JSON.parse(decodeURIComponent(decodeURIComponent(query.queryThing)));
       var page = query && query.page;
+      console.log(queryThing);
       Post.getTen(queryThing,page,function(err,docs,total) {
-          if(err) {
+          if(err!=null) {
               var data = {
                 status:false,
                 message:"取出数据失败！"

@@ -1,6 +1,7 @@
 var Img = require('./img');
 var AppActions = require('../actions/AppActions');
 var AppActionsCommon = require('../common/actions/AppActions');
+var lib = require('../lib/index');
 var Header = React.createClass({
 	setMainList:function(params) {
 		var queryThing = {
@@ -29,17 +30,20 @@ var Header = React.createClass({
 		AllComponents.scrollTop = 0;
 		mainList.classList.add('mainListforselfcenter');
 		selfCenterWrap.classList.remove('hidden');
-		FloatFixed.classList.remove('hidden');
+		setTimeout(function() {
+			FloatFixed.classList.remove('hidden');
+		},480);
+		AppActions.selfCenter()
 	},
 	showPublish:function() {
 		$.ajax({
-			url:'http://localhost:3009/graduationDesign/api/lostAndFound/getUserOwn',
+			url:lib.returnHost() + 'graduationDesign/api/lostAndFound/isLogin',
 			dataType:"jsonp",
 			success:function(data) {
 				if(data && data.status==true) {
 					AppActions.setPublish({active:true});
 				}else {
-
+					AppActions.setLogin({active:true});
 				}
 			},
 			error:function() {
@@ -57,12 +61,12 @@ var Header = React.createClass({
 			<div className="header">
 				<div className="header-wrap">
 					<div className="header-showl" onClick={this.showSelfCenter}>
-						<Img src="../build/img/btn_self.png" rname="img-box" />
+						<Img src="../build/img/btn_self.png" static={true} rname="img-box" />
 					</div>
 					<div className="header-text header-text-active" onClick={function(){self.setMainList({type:"found"})}}>已捡到</div>
 					<div className="header-text" onClick={function(){self.setMainList({type:"lost"})}}>已丢失</div>
 					<div className="header-showr" onClick={this.showPublish}>
-						<Img src="../build/img/edit.png" rname="img-box" />
+						<Img src="../build/img/edit.png" static={true} rname="img-box" />
 					</div>
 				</div>
 			</div>

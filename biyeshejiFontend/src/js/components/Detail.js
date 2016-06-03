@@ -1,5 +1,8 @@
 var AppActions = require('../actions/AppActions');
+var lib = require('../lib/index');
+var Img = require('./img');
 var Tag = require('./Tag');
+var twice = 1;
 var Detail = React.createClass({
 	componentDidUpdate: function() {
 		var detail = this.props.detail;
@@ -10,9 +13,14 @@ var Detail = React.createClass({
 		}else if(!detail.active && !publish.active){
 			mainList.classList.remove('mainListforDetail');
 		}
+		if(twice<3 && detail.active==true) {
+			var img = this.props.img;
+			img.fireLazyload();	
+			twice++		
+		}
 	},
 	touchMove:function(e) {
-		//e.preventDefault();
+		e.preventDefault();
 	},
 	back:function() {
 		AppActions.setSelfDetail({back:true});
@@ -27,7 +35,7 @@ var Detail = React.createClass({
 			)
 		});
 		return (
-			<div className={detail && detail.active?"detail detail-act":"detail"} onTouchMove={function(e){self.touchMove(e)}}>
+			<div className={detail && detail.active?"detail detail-act":"detail"}>
 				<div className="detail-wrap">
 					<div className="detail-head">
 						<div className="back" onClick={this.back}>
@@ -37,10 +45,10 @@ var Detail = React.createClass({
 							详情页
 						</div>
 					</div>
-					<div className="detail-content">
+					<div className="detail-content overflowScrolling">
 						<div className="detail-c-p-message">
 							<div className="detail-pp-img">
-								<img src={data.img || "../build/img/pp-pic.png"} />
+								<img src={data.img || "../build/img/logo.png"} />
 							</div>
 							<div className="nameanddate">
 								<div className="name">{data.name}</div>
@@ -57,7 +65,7 @@ var Detail = React.createClass({
 							{listTag}
 						</div>
 						<div className="detail-b-img">
-							{data.ttImg?<img src={data.ttImg} />:<div></div>}
+							{data.ttimg?<img src={lib.returnHost()+data.ttimg} />:<div></div>}
 						</div>
 					</div>
 				</div>

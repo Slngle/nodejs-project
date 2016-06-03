@@ -1,6 +1,8 @@
 var AppActions = require('../actions/AppActions');
 var AppActionsCommon = require('../common/actions/AppActions');
+var lib = require('../lib/index');
 var queryData = {};//ttimg
+var timer  = null;
 var Publish = React.createClass({
 	componentDidUpdate: function() {
 		var publish = this.props.publish;
@@ -13,10 +15,10 @@ var Publish = React.createClass({
 		}
 	},
 	submit:function(params) {
-		if(!queryData || queryData.des=="描述......" || !queryData.des || !queryData.type || !queryData.itemType) {
+		if(!queryData || queryData.des=="描述......" || !queryData.des || !queryData.type || !queryData.itemType || !queryData.Ltime || !queryData.area) {
 			AppActionsCommon.setToast({
 				title:"失物招领提示",
-				content:'请填写描述、类别、分类才可以提交'
+				content:'请填写完整信息，再提交'
 			});
 		}else {
 			AppActions.publish({
@@ -67,7 +69,6 @@ var Publish = React.createClass({
 		jiantou.classList.add('jiantouActive');
 	},
 	choose:function(params) {
-		//chooseClass':'.fl1 choose',"class":'.fl1 .jiantou',"id":"J_flMain0":,e:e
 		var chooseClass = params.chooseClass;
 		var className = params.class;
 		var id = params.id;
@@ -89,12 +90,53 @@ var Publish = React.createClass({
 				queryData[type] = choose.innerHTML;
 			}
 		}
-		console.log(queryData);
 	},
 	onTextChange:function(params) {
-		var target = params.ev.target;
-		queryData.des = target.value;
-		console.log(queryData,target);
+		clearTimeout(timer);
+		timer = setTimeout(function() {
+			var target = params.ev.target;
+			queryData.des = target.value;			
+		},200);
+	},
+	upLoad:function(ev) {
+		var target = ev.target;
+		if(target && target.files && target.files.length>0) {
+			var fileObj = target.files[0];//获取文件对象
+			var FileController = lib.returnHost() + "graduationDesign/api/lostAndFound/upload_file";   // 接收上传文件的后台地址
+			// FormData 对象
+			var form = new FormData();
+			form.append("file", fileObj);// 文件对象
+			// XMLHttpRequest 对象
+			var xhr = new XMLHttpRequest();
+			xhr.open("post", FileController, true);
+
+			xhr.onreadystatechange = function () {
+	           if (xhr.readyState == 4) {
+	               if (xhr.status == 200) {
+	                   var response = xhr.responseText;
+	                   var J_pzImg = document.querySelector("#J_pzImg");
+	                   try {
+	                   		response = JSON.parse(response);
+	                   }catch(ex) {
+	                   		console.log(ex);
+	                   }
+	                   J_pzImg.src = lib.returnHost() + response.url;
+	                   queryData.ttimg = response.url;
+	                   AppActionsCommon.setToast({
+	                   		title:'失物招领提示',
+	                   		type:'toast',
+	                   		content:'上传成功'
+	                   });
+	               }
+	           }
+	       };
+	       xhr.send(form);
+		}else {
+            AppActionsCommon.setToast({
+           		title:'失物招领提示',
+           		content:'请选择一个图片！'
+           	});
+        }
 	},
 	render: function() {
 		var publish = this.props.publish;
@@ -133,7 +175,7 @@ var Publish = React.createClass({
 
 			                    <div className="content-uploadfile" style={{width:"1.6rem",height:"1.6rem",position:"absolute",zIndex:999}}>
 			                         <form method="post" enctype="multipart/form-data">
-			                             <input type="file" id="file" name="myfile" accept="image/*;capture=camera" style={{"width":"1.6rem","height":"1.6rem","opacity":0,"border":0}} /> 
+			                             <input type="file" id="file" accept="image/*;capture=camera" style={{"width":"1.6rem","height":"1.6rem","opacity":0,"border":0}} onChange={this.upLoad.bind(this)}/> 
 			                         </form>
 			                    </div> 
 
@@ -220,22 +262,16 @@ var Publish = React.createClass({
 			        <i className="fl-box" id="J_flMain3" onClick={function(e){self.choose({"type":'area','chooseClass':'.fl4 .choose',"class":'.fl4 .jiantou',"id":"#J_flMain3",e:e,height:'height4'})}}>
 			            <div className="fl-box-left">
 			                <ul id="left-dd">
-			                	<li>教学区一号楼</li>
-			                	<li>教学区三号楼</li>
-			                	<li>教学区五号楼</li>
-			                	<li>教学区七号楼</li>
-			                	<li>教学区九号楼</li>
-			                	<li>教学区十一号楼</li>
+			                	<li>教学区南一门</li>
+			                	<li>生活区南一门</li>
+			                	<li>运动场南一门</li>
 			                </ul>
 			            </div>
 			            <div className="fl-box-right">
 			                <ul id="right-dd">
-			                	<li>教学区二号楼</li>
-			                	<li>教学区四号楼</li>
-			                	<li>教学区六号楼</li>
-			                	<li>教学区八号楼</li>
-			                	<li>教学区十号楼</li>
-			                	<li>教学区十二号楼</li>
+			                	<li>教学区南二门</li>
+			                	<li>生活区南二门</li>
+			                	<li>运动场南二门</li>
 			                </ul>
 			            </div>          
 			        </i>

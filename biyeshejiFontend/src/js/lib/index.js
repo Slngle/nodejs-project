@@ -26,6 +26,13 @@ lib.throttle = function (func, wait) {
     };
 }
 
+//运动函数
+lib.moveFn = function(params) {
+    var timer = null;
+    var time = params.time;
+    
+}
+
 //获取链接里的参数
 lib.getByUrl = function(key,source) {
   var url = source?decodeURIComponent(decodeURIComponent(source)):decodeURIComponent(decodeURIComponent(window.location.href));
@@ -92,7 +99,7 @@ lib.returnHost = function(params) {
     }else if(hostname.match("h5") || hostname.match("www")) {
         return (https+'//www.52shangou.com/');
     }else {
-        return (https+'//daily.52shangou.com/');
+        return (https+'//10.17.72.128:3009/');
     }
 }
 

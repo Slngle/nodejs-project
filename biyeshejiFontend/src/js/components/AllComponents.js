@@ -18,6 +18,7 @@ var Detail = require("./Detail");
 var FloatFixed = require("./FloatFixed");
 var Publish = require('./Publish');
 var Login = require('./Login');
+var Register = require('./Register');
 var lib = require('../lib/index.js');
 var goUp;
 var AllComponents = React.createClass({
@@ -31,6 +32,9 @@ var AllComponents = React.createClass({
 			goUp.classList.add('hidden');
 		}
 	},
+	scroll:function() {
+		img.fireLazyload();
+	},
     componentDidMount:function() {
     	var self = this;
         img.fireLazyload();       
@@ -42,17 +46,20 @@ var AllComponents = React.createClass({
 	render: function() {
 
 		return (
-			<div className = "AllComponents">
+			<div className = "AllComponents" onScroll={this.scroll}>
 				<div className="mainList">
-					<Header />
-					<Floor floor = {this.props.floor} floorType = {this.props.floorType}/>
-					<ListWrap listData = {this.props.mainList} />
+					<div className="mainListWrap">
+						<Header />
+						<Floor floor = {this.props.floor} floorType = {this.props.floorType} />
+						<ListWrap img = {img} listData = {this.props.mainList} />
+					</div>
 				</div>
 				<FloatFixed />
-				<Detail detail = {this.props.detail} publish = {this.props.publish}/>
-				<SelfCenter />
+				<Detail img = {img} detail = {this.props.detail} publish = {this.props.publish} />
+				<SelfCenter img = {img} selfcenter = {this.props.selfcenter} />
 				<Publish detail = {this.props.detail} publish = {this.props.publish} />
-				<Login loginPart = {this.props.loginPart}/>
+				<Login img = {img} loginPart = {this.props.loginPart} />
+				<Register img = {img} register={this.props.register} />
 				<Goup />
 				<Toast />
 			</div>

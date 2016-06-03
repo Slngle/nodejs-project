@@ -916,13 +916,21 @@ li {
 
 html,
 body {
+  width: 100%;
   height: 100%;
+  overflow: hidden;
+}
+
+input[type="search"] {
+  background: no-repeat 0 0 scroll ＃EEEEEE;
+  border: none;
+  outline: medium;
 }
 
 .wrap {
   width: 100%;
   height: 100%;
-  /*overflow:hidden;*/
+  overflow: hidden;
 }
 
 .hidden {
@@ -936,26 +944,39 @@ body {
   z-index: 4;
   width: 2rem;
   height: 100%;
+  box-shadow: -0.066667rem 0 0.266667rem #bbb;
+}
+
+.overflowScrolling {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
 }
 
 .AllComponents {
   width: 10rem;
   height: 100%;
   margin: 0 auto;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  overflow-x: hidden;
+  overflow: hidden;
+  position: relative;
 }
 
 .mainList {
   background-color: #fff;
-  min-height: 100%;
+  height: 100%;
   position: relative;
   z-index: 2;
   -webkit-transition: all .5s;
           transition: all .5s;
   -webkit-transform: translate3d(0, 0, 0);
           transform: translate3d(0, 0, 0);
+}
+
+.mainListWrap {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  width: 100%;
+  height: 100%;
 }
 
 .mainListforselfcenter {
@@ -1024,6 +1045,8 @@ body {
 .list-wrap {
   width: 100%;
   padding-bottom: 0.533333rem;
+  -webkit-box-flex: 1;
+  overflow: auto;
 }
 
 .list {
@@ -1118,6 +1141,7 @@ body {
 
 .content-text-tag {
   -webkit-box-flex: 1;
+  cursor: pointer;
 }
 
 .content-des {
@@ -1172,7 +1196,7 @@ body {
 /*SelfCenter*/
 
 .self-center {
-  position: fixed;
+  position: absolute;
   left: 0;
   top: 0;
   z-index: 1;
@@ -1198,8 +1222,9 @@ body {
 }
 
 .per-img {
-  padding: 0.333333rem 0 0.133333rem 0;
+  padding: 0.733333rem 0 0.533333rem 0;
   background-color: #fff;
+  background-color: #d5b12f;
 }
 
 [data-dpr="1"] .per-img {
@@ -1221,6 +1246,7 @@ body {
   overflow: hidden;
   margin: 0 auto;
   margin-bottom: 0.266667rem;
+  background-color: #f5c224;
 }
 
 .self-pic img {
@@ -1229,7 +1255,7 @@ body {
 }
 
 .user-nick {
-  color: #232323;
+  color: #fff;
   font-size: 0.4rem;
   text-align: center;
 }
@@ -1238,6 +1264,74 @@ body {
   -webkit-box-flex: 1;
   -webkit-overflow-scrolling: touch;
   overflow: auto;
+}
+
+.self-list-wrap {
+  width: 100%;
+  margin-bottom: 0.2rem;
+}
+
+.self-list-content {
+  background-color: #f1f0f0;
+  border-left: 0.053333rem solid #d5b12f;
+  padding: 0.333333rem 0.266667rem 0.333333rem 0.266667rem;
+}
+
+.self-list-title {
+  color: #222222;
+  margin-bottom: 0.266667rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+[data-dpr="1"] .self-list-title {
+  font-size: 14px;
+}
+
+[data-dpr="2"] .self-list-title {
+  font-size: 28px;
+}
+
+[data-dpr="3"] .self-list-title {
+  font-size: 42px;
+}
+
+.loginandout {
+  height: 2rem;
+  overflow: hidden;
+}
+
+.l-o {
+  width: 5.066667rem;
+  height: 1.266667rem;
+  margin: 0 auto;
+  border-radius: 0.8rem;
+  background-color: #dcb526;
+  color: #fff;
+  line-height: 1.266667rem;
+  font-size: 0.48rem;
+  text-align: center;
+  margin-top: 0.266667rem;
+}
+
+.no-self-list {
+  display: -webkit-box;
+  -webkit-box-align: center;
+  -webkit-box-pack: center;
+}
+
+.no-self-list img {
+  width: 4.066667rem;
+  height: 3.266667rem;
+  display: block;
+}
+
+.self-list-tags .tag {
+  color: #fff;
+  background-color: #d5b12f;
 }
 
 /*SelfCenter*/
@@ -1255,14 +1349,14 @@ body {
           transform: translate3d(0, 0, 0);
   -webkit-transition: all .5s;
           transition: all .5s;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  overflow-x: hidden;
   background-color: #fff;
 }
 
 .detail-wrap {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
   width: 100%;
+  height: 100%;
 }
 
 .detail-act {
@@ -1299,6 +1393,7 @@ body {
 }
 
 .detail-content {
+  -webkit-box-flex: 1;
   margin: 0.2rem 0.266667rem 0 0.266667rem;
 }
 
@@ -1618,7 +1713,7 @@ body {
 }
 
 .publish .height4 {
-  height: 6rem;
+  height: 3rem;
 }
 
 .publish-act {
@@ -1665,12 +1760,143 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: red;
   z-index: 5;
   -webkit-transition: all .5s;
           transition: all .5s;
   -webkit-transform: translate3d(0, 0, 0);
           transform: translate3d(0, 0, 0);
+  background-color: #f4f5f7;
+}
+
+.loginpart .loginpart-head {
+  width: 100%;
+  height: 1.28rem;
+  background-color: #e2b72d;
+  display: -webkit-box;
+  -webkit-box-align: center;
+}
+
+.loginpart .back {
+  margin-left: 0.533333rem;
+  width: 0.746667rem;
+  height: 0.746667rem;
+}
+
+.loginpart .back img {
+  width: 100%;
+  height: 100%;
+}
+
+.loginpart .loginpart-text {
+  -webkit-box-flex: 1;
+  margin-left: -1.28rem;
+  text-align: center;
+  font-size: 0.453333rem;
+  color: #fff;
+  line-height: 1.28rem;
+}
+
+.loginpart .part-l {
+  margin-top: 0.8rem;
+}
+
+.loginpart .part-logo {
+  width: 2.4rem;
+  height: 2.4rem;
+  margin: 0 auto;
+}
+
+.loginpart .part-logo img {
+  width: 100%;
+  height: 100%;
+  vertical-align: top;
+}
+
+.loginpart .login-input {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.loginpart .login-input-wrap {
+  width: 8.533333rem;
+  margin: 0 auto;
+  border: 1px solid #dbdbdb;
+  background-color: #fff;
+}
+
+.loginpart .loging-phone {
+  display: -webkit-box;
+  -webkit-box-align: center;
+  height: 1.8rem;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.loginpart .login-password {
+  display: -webkit-box;
+  -webkit-box-align: center;
+  height: 1.8rem;
+}
+
+.loginpart .phone-img {
+  width: 0.533333rem;
+  height: 0.533333rem;
+  margin: 0 0.4rem;
+}
+
+.loginpart .phone-img img {
+  width: 100%;
+  height: 100%;
+}
+
+.loginpart .password-img {
+  width: 0.533333rem;
+  height: 0.533333rem;
+  margin: 0 0.4rem;
+}
+
+.loginpart .password-img img {
+  width: 100%;
+  height: 100%;
+}
+
+.loginpart .part-input {
+  font-size: 0.426667rem;
+  color: #a5a5a5;
+  -webkit-box-flex: 1;
+  display: block;
+  padding: 0.2rem 0;
+}
+
+.loginpart .login-reg-btn {
+  margin-top: 0.933333rem;
+}
+
+.loginpart .login-reg-btn-wrap {
+  width: 8.533333rem;
+  margin: 0 auto;
+}
+
+.loginpart .login-btn {
+  width: 100%;
+  height: 1.333333rem;
+  line-height: 1.333333rem;
+  border-radius: 0.133333rem;
+  background-color: #e1b62b;
+  color: #fff;
+  font-size: 0.533333rem;
+  text-align: center;
+}
+
+.loginpart .reg-btn {
+  width: 100%;
+  height: 1.333333rem;
+  margin-top: 0.466667rem;
+  line-height: 1.333333rem;
+  border-radius: 0.133333rem;
+  border: 1px solid #e1b62b;
+  color: #e1b62b;
+  font-size: 0.533333rem;
+  text-align: center;
 }
 
 .loginpartAct {
@@ -1679,3 +1905,120 @@ body {
 }
 
 /*loginpart*/
+
+/*reg*/
+
+.register {
+  position: fixed;
+  left: 100%;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 6;
+  -webkit-transform: translate3d(0, 0, 0);
+          transform: translate3d(0, 0, 0);
+  -webkit-transition: all .5s;
+          transition: all .5s;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.register .register-head {
+  width: 100%;
+  height: 1.28rem;
+  background-color: #e2b72d;
+  display: -webkit-box;
+  -webkit-box-align: center;
+}
+
+.register .back {
+  margin-left: 0.533333rem;
+  width: 0.746667rem;
+  height: 0.746667rem;
+}
+
+.register .back img {
+  width: 100%;
+  height: 100%;
+}
+
+.register .register-text {
+  -webkit-box-flex: 1;
+  margin-left: -1.28rem;
+  text-align: center;
+  font-size: 0.453333rem;
+  color: #fff;
+  line-height: 1.28rem;
+}
+
+.register .reg-input {
+  width: 100%;
+}
+
+.register .reg-input-wrap {
+  background-color: #fff;
+}
+
+.register .reg-phone {
+  display: -webkit-box;
+  -webkit-box-align: center;
+  height: 1.8rem;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.register .reg-password {
+  display: -webkit-box;
+  -webkit-box-align: center;
+  height: 1.8rem;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.register .phone-img {
+  width: 0.533333rem;
+  height: 0.533333rem;
+  margin: 0 0.4rem;
+}
+
+.register .phone-img img {
+  width: 100%;
+  height: 100%;
+}
+
+.register .password-img {
+  width: 0.533333rem;
+  height: 0.533333rem;
+  margin: 0 0.4rem;
+}
+
+.register .password-img img {
+  width: 100%;
+  height: 100%;
+}
+
+.register .part-input {
+  font-size: 0.426667rem;
+  color: #a5a5a5;
+  -webkit-box-flex: 1;
+  display: block;
+  padding: 0.2rem 0;
+}
+
+.register .regBtn {
+  width: 8.533333rem;
+  height: 1.333333rem;
+  line-height: 1.333333rem;
+  border-radius: 0.133333rem;
+  background-color: #e1b62b;
+  color: #fff;
+  font-size: 0.533333rem;
+  text-align: center;
+  margin: 0 auto;
+  margin-top: 0.733333rem;
+}
+
+.register-act {
+  -webkit-transform: translate3d(-100%, 0, 0);
+          transform: translate3d(-100%, 0, 0);
+}
+
+/*reg*/

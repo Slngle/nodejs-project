@@ -44,6 +44,43 @@ var AppActions = {
             params: params
         });
     },
+    setLogin: function(params) {
+        AppDispatcher.dispatch({
+            actionType: actionType.setLogin,
+            params: params
+        });
+    },
+    goLogin: function(params) {
+        AppDispatcher.dispatch({
+            actionType: actionType.goLogin,
+            params: params
+        });
+    },
+    setRegister: function(params) {
+        AppDispatcher.dispatch({
+            actionType: actionType.setRegister,
+            params: params
+        });
+    },
+    register: function(params) {
+        AppDispatcher.dispatch({
+            actionType: actionType.register,
+            params: params
+        });
+    },
+    selfCenter: function(params) {
+        AppDispatcher.dispatch({
+            actionType: actionType.selfCenter,
+            params: params
+        });
+    },   
+    logout: function(params) {
+        AppDispatcher.dispatch({
+            actionType: actionType.logout,
+            params: params
+        });
+    },   
+
 };
 
 module.exports = AppActions;

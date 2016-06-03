@@ -5,5 +5,11 @@ module.exports = {
     setSelfCenter: 'setSelfCenter',
     setFloorActiveId: 'setFloorActiveId',
     setPublish: 'setPublish',
-    publish: 'publish'
+    publish: 'publish',
+    setLogin:'setLogin',
+    goLogin:'goLogin',
+    setRegister:'setRegister',
+    register:'register',
+    selfCenter:'selfCenter',
+    logout:'logout'
 };

@@ -86,7 +86,7 @@
 	                React.createElement(Error, { error: this.state.error })
 	            );
 	        } else {
-	            return React.createElement(AllComponents, { loginPart: this.state.loginPart, publish: this.state.publish, detail: this.state.detail, floor: this.state.floor, floorType: this.state.floorType, mainList: this.state.mainList, selfCenter: this.state.selfCenter });
+	            return React.createElement(AllComponents, { register: this.state.register, loginPart: this.state.loginPart, publish: this.state.publish, detail: this.state.detail, floor: this.state.floor, floorType: this.state.floorType, mainList: this.state.mainList, selfcenter: this.state.selfcenter });
 	        }
 	    }
 	});
@@ -180,14 +180,39 @@
 	      return setPublish(action.params);
 	    case actionType.publish:
 	      return publish(action.params);
+	    case actionType.setLogin:
+	      return setLogin(action.params);
+	    case actionType.goLogin:
+	      return goLogin(action.params);
+	    case actionType.setRegister:
+	      return setRegister(action.params);
+	    case actionType.register:
+	      return register(action.params);
+	    case actionType.selfCenter:
+	      return selfCenter(action.params);
+	    case actionType.logout:
+	      return logout(action.params);
 	    default:
 	      return true;
 	  }
 	});
 
 	AppStores.data = {
+	  error: {
+	    display: { display: "none" },
+	    text: {
+	      p1: "",
+	      p2: ""
+	    }
+	  },
+	  loading: {
+	    display: "block"
+	  },
 	  mainList: {},
-	  selfCenter: {},
+	  selfcenter: {
+	    active: false,
+	    data: {}
+	  },
 	  floorType: 'found',
 	  detail: {
 	    active: false,
@@ -203,6 +228,9 @@
 	  },
 	  loginPart: {
 	    active: false
+	  },
+	  register: {
+	    active: false
 	  }
 	};
 
@@ -212,8 +240,9 @@
 	    "type": "found"
 	  };
 	  $.ajax({
-	    url: 'http://localhost:3009/graduationDesign/api/lostAndFound/getPosts',
+	    url: lib.returnHost() + 'graduationDesign/api/lostAndFound/getPosts',
 	    dataType: 'jsonp',
+	    timeout: 10000,
 	    data: {
 	      queryThing: JSON.stringify(queryThing),
 	      "page": 1
@@ -228,24 +257,156 @@
 	      }
 	    },
 	    error: function error(ex) {
-	      console.log(ex);
+	      AppStores.data.loading = { display: 'none' };
+	      AppStores.data.error = {
+	        display: { display: "block" },
+	        text: {
+	          p1: "请求失败",
+	          p2: JSON.stringify(ex) || "网络异常，获取数据失败！"
+	        }
+	      };
+	      AppStores.emitChange();
+	    }
+	  });
+	}
+
+	function goLogin(params) {
+	  $.ajax({
+	    url: lib.returnHost() + 'graduationDesign/api/lostAndFound/login',
+	    data: params,
+	    dataType: 'jsonp',
+	    success: function success(data) {
+	      if (data && data.status == true) {
+	        AppActionsCommon.setToast({
+	          title: '失物招领提示',
+	          type: 'toast',
+	          content: '登录成功！'
+	        });
+	        setTimeout(function () {
+	          if (params && params.selfcenter) {
+	            selfCenter();
+	          }
+	          AppStores.data.loginPart.active = false;
+	          AppStores.emitChange();
+	        }, 1500);
+	      } else {
+	        AppActionsCommon.setToast({
+	          title: '失物招领提示',
+	          content: data.message
+	        });
+	      }
+	    },
+	    error: function error(ex) {
+	      AppActionsCommon.setToast({
+	        title: '失物招领提示',
+	        content: "网络异常！"
+	      });
+	    }
+	  });
+	}
+
+	function logout(params) {
+	  $.ajax({
+	    url: lib.returnHost() + "graduationDesign/api/lostAndFound/logout",
+	    dataType: 'jsonp',
+	    success: function success(data) {
+	      if (data && data.status == true) {
+	        AppActionsCommon.setToast({
+	          title: '失物招领提示',
+	          type: 'toast',
+	          content: "注销成功!"
+	        });
+	        if (params && params.selfcenter) {
+	          console.log(333333);
+	          selfCenter();
+	        }
+	      }
+	    },
+	    error: function error(ex) {
+	      AppActionsCommon.setToast({
+	        title: '失物招领提示',
+	        content: "网络异常！"
+	      });
+	    }
+	  });
+	}
+
+	function register(params) {
+	  $.ajax({
+	    url: lib.returnHost() + 'graduationDesign/api/lostAndFound/reg',
+	    dataType: 'jsonp',
+	    data: params,
+	    success: function success(data) {
+	      if (data && data.status == true) {
+	        AppActionsCommon.setToast({
+	          title: '失物招领提示',
+	          type: 'toast',
+	          content: "注册成功！"
+	        });
+
+	        setTimeout(function () {
+	          setRegister({ active: false });
+	        }, 1500);
+	      } else {
+	        AppActionsCommon.setToast({
+	          title: '失物招领提示',
+	          content: data.message || "注册失败！"
+	        });
+	      }
+	    },
+	    error: function error(ex) {
+	      AppActionsCommon.setToast({
+	        title: '失物招领提示',
+	        content: "网络异常！"
+	      });
+	    }
+	  });
+	}
+
+	function selfCenter() {
+	  $.ajax({
+	    url: lib.returnHost() + 'graduationDesign/api/lostAndFound/getUserOwn',
+	    dataType: 'jsonp',
+	    data: {},
+	    success: function success(data) {
+	      if (data && data.status == true) {
+	        AppStores.data.selfcenter.active = true;
+	        AppStores.data.selfcenter.data = data.entry;
+	        AppStores.emitChange();
+	      } else {
+	        AppStores.data.selfcenter.active = false;
+	        AppStores.data.selfcenter.data = {};
+	        AppStores.emitChange();
+	      }
+	    },
+	    error: function error(ex) {
+	      AppActionsCommon.setToast({
+	        title: '失物招领提示',
+	        content: "网络异常,获取个人信息失败！"
+	      });
 	    }
 	  });
 	}
 
 	function setLogin(params) {
-	  AppStores.data.publish.active = params.active;
+	  AppStores.data.loginPart.active = params.active;
+	  AppStores.data.loginPart.selfcenter = params.selfcenter;
 	  AppStores.emitChange();
 	}
 
 	function setPublish(params) {
-	  AppStores.data.loginPart.active = params.active;
+	  AppStores.data.publish.active = params.active;
+	  AppStores.emitChange();
+	}
+
+	function setRegister(params) {
+	  AppStores.data.register.active = params.active;
 	  AppStores.emitChange();
 	}
 
 	function publish(params) {
 	  $.ajax({
-	    url: 'http://localhost:3009/graduationDesign/api/lostAndFound/post',
+	    url: lib.returnHost() + 'graduationDesign/api/lostAndFound/post',
 	    dataType: 'jsonp',
 	    data: params.data,
 	    success: function success(data) {
@@ -258,6 +419,13 @@
 	        setTimeout(function () {
 	          AppStores.data.publish.active = false;
 	          AppStores.emitChange();
+	          var params = {
+	            queryThing: {
+	              type: 'found'
+	            },
+	            page: 1
+	          };
+	          setMainList(params);
 	        }, 1500);
 	      } else {
 	        AppActionsCommon.setToast({
@@ -278,10 +446,10 @@
 	function setMainList(params) {
 	  var queryThing = params.queryThing;
 	  $.ajax({
-	    url: 'http://localhost:3009/graduationDesign/api/lostAndFound/getPosts',
+	    url: lib.returnHost() + 'graduationDesign/api/lostAndFound/getPosts',
 	    dataType: 'jsonp',
 	    data: {
-	      queryThing: JSON.stringify(queryThing),
+	      queryThing: encodeURIComponent(encodeURIComponent(JSON.stringify(queryThing))),
 	      page: params.page
 	    },
 	    success: function success(data) {
@@ -289,6 +457,7 @@
 	        var entry = data.entry;
 	        AppStores.data.mainList.list = entry.docs;
 	        AppStores.data.floorType = params.queryThing.type;
+	        AppStores.emitChange();
 	        AppStores.emitChange();
 	      }
 	    },
@@ -305,7 +474,7 @@
 	    return;
 	  }
 	  $.ajax({
-	    url: 'http://localhost:3009/graduationDesign/api/lostAndFound/getDetail',
+	    url: lib.returnHost() + 'graduationDesign/api/lostAndFound/getDetail',
 	    dataType: 'jsonp',
 	    data: {
 	      ArticleID: params.ArticleID
@@ -326,7 +495,7 @@
 
 	function setSelfCenter(params) {
 	  $.ajax({
-	    url: 'http://localhost:3009/graduationDesign/api/lostAndFound/getUserOwn',
+	    url: lib.returnHost() + 'graduationDesign/api/lostAndFound/getUserOwn',
 	    dataType: 'jsonp',
 	    success: function success(data) {
 	      if (data && data.status == true) {
@@ -362,13 +531,9 @@
 	  loading: {
 	    display: "block"
 	  },
-	  selfCenter: {
-	    haveData: false,
-	    data: {
-	      pic: '',
-	      name: '',
-	      list: []
-	    }
+	  selfcenter: {
+	    active: false,
+	    data: {}
 	  },
 	  floorType: 'found',
 	  floor: {
@@ -384,6 +549,9 @@
 	    data: {}
 	  },
 	  loginPart: {
+	    active: false
+	  },
+	  register: {
 	    active: false
 	  }
 	};
@@ -403,7 +571,13 @@
 	    setSelfCenter: 'setSelfCenter',
 	    setFloorActiveId: 'setFloorActiveId',
 	    setPublish: 'setPublish',
-	    publish: 'publish'
+	    publish: 'publish',
+	    setLogin: 'setLogin',
+	    goLogin: 'goLogin',
+	    setRegister: 'setRegister',
+	    register: 'register',
+	    selfCenter: 'selfCenter',
+	    logout: 'logout'
 	};
 
 /***/ },
@@ -1209,6 +1383,12 @@
 	    };
 	};
 
+	//运动函数
+	lib.moveFn = function (params) {
+	    var timer = null;
+	    var time = params.time;
+	};
+
 	//获取链接里的参数
 	lib.getByUrl = function (key, source) {
 	    var url = source ? decodeURIComponent(decodeURIComponent(source)) : decodeURIComponent(decodeURIComponent(window.location.href));
@@ -1275,7 +1455,7 @@
 	    } else if (hostname.match("h5") || hostname.match("www")) {
 	        return https + '//www.52shangou.com/';
 	    } else {
-	        return https + '//daily.52shangou.com/';
+	        return https + '//10.17.72.128:3009/';
 	    }
 	};
 
@@ -1485,7 +1665,44 @@
 	            actionType: actionType.publish,
 	            params: params
 	        });
+	    },
+	    setLogin: function setLogin(params) {
+	        AppDispatcher.dispatch({
+	            actionType: actionType.setLogin,
+	            params: params
+	        });
+	    },
+	    goLogin: function goLogin(params) {
+	        AppDispatcher.dispatch({
+	            actionType: actionType.goLogin,
+	            params: params
+	        });
+	    },
+	    setRegister: function setRegister(params) {
+	        AppDispatcher.dispatch({
+	            actionType: actionType.setRegister,
+	            params: params
+	        });
+	    },
+	    register: function register(params) {
+	        AppDispatcher.dispatch({
+	            actionType: actionType.register,
+	            params: params
+	        });
+	    },
+	    selfCenter: function selfCenter(params) {
+	        AppDispatcher.dispatch({
+	            actionType: actionType.selfCenter,
+	            params: params
+	        });
+	    },
+	    logout: function logout(params) {
+	        AppDispatcher.dispatch({
+	            actionType: actionType.logout,
+	            params: params
+	        });
 	    }
+
 	};
 
 	module.exports = AppActions;
@@ -1518,7 +1735,7 @@
 
 /***/ },
 /* 16 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	//img
 	//rname为包裹的classname
@@ -1531,38 +1748,44 @@
 	//initSize 初始占位图的大小
 	'use strict';
 
+	var lib = __webpack_require__(13);
 	var Img = React.createClass({
 	    displayName: 'Img',
 
 	    render: function render() {
-	        //@750w_410h_90q_100sh.gif?native_cache=86400
 	        var className = this.props.rname ? ' ' + this.props.rname : '';
 	        var dataSize = this.props.size || '';
 	        var width = dataSize && dataSize.split('x') && dataSize.split('x')[0];
 	        var height = dataSize && dataSize.split('x') && dataSize.split('x')[1];
-	        var image = this.props.img || '//imgsize.52shangou.com/img/n/10/13/7078624247561ca3d5b110f3efdeaa03e6153af1af2daa38f3968a9.png';
+	        var image = this.props.img || '../build/img/moren.png';
 	        var slider = this.props.slider;
-	        var src = this.props.src;
-	        if (dataSize && src.indexOf('|watermark') !== -1) {
-	            //带水印
-	            src += '|' + width + 'w_' + (height ? height + 'h_' : '') + 90 + 'q_100sh.jpg?native_cache=25920000000';
-	        } else if (dataSize) {
-	            //不带水印
-	            src += '@' + width + 'w_' + (height ? height + 'h_' : '') + 90 + 'q_100sh.jpg?native_cache=25920000000';
+
+	        if (this.props['static']) {
+	            var src = this.props.src;
+	        } else {
+	            var src = lib.returnHost() + this.props.src;
 	        }
 
+	        if (dataSize && src.indexOf('|watermark') !== -1) {
+	            //带水印
+	            src += '|' + width + 'w_' + (height ? height + 'h_' : '') + 90 + 'q_100sh.jpg';
+	        } else if (dataSize) {
+	            //不带水印
+	            src += '@' + width + 'w_' + (height ? height + 'h_' : '') + 90 + 'q_100sh.jpg';
+	        }
+	        console.log(src);
 	        if (slider == 'true') {
 	            if (this.props.link) {
 	                return React.createElement(
 	                    'a',
 	                    { href: this.props.link, className: "img" + className },
-	                    React.createElement('img', { src: image, 'data-img': src, 'data-cdn': 'no', className: 'lazyimg' })
+	                    React.createElement('img', { src: src, 'data-img': src, 'data-cdn': 'no', className: 'lazyimg' })
 	                );
 	            } else {
 	                return React.createElement(
 	                    'div',
 	                    { className: "img" + className },
-	                    React.createElement('img', { src: image, 'data-img': src, 'data-cdn': 'no', className: 'lazyimg' })
+	                    React.createElement('img', { src: src, 'data-img': src, 'data-cdn': 'no', className: 'lazyimg' })
 	                );
 	            }
 	        } else {
@@ -1570,13 +1793,13 @@
 	                return React.createElement(
 	                    'a',
 	                    { href: this.props.link, className: "img" + className },
-	                    React.createElement('img', { src: image, 'data-src': src, 'data-cdn': 'no', className: 'lazyload-img' })
+	                    React.createElement('img', { src: src, 'data-src': src, 'data-cdn': 'no', className: 'lazyload-img' })
 	                );
 	            } else {
 	                return React.createElement(
 	                    'div',
 	                    { className: "img" + className },
-	                    React.createElement('img', { src: image, 'data-src': src, 'data-cdn': 'no', 'data-size': dataSize, className: 'lazyload-img' })
+	                    React.createElement('img', { src: src, 'data-src': src, 'data-cdn': 'no', 'data-size': dataSize, className: 'lazyload-img' })
 	                );
 	            }
 	        }
@@ -1601,16 +1824,17 @@
 	});
 	var bodyDom = document.body;
 	var fast = SGLib.FastClick(bodyDom);
-	var Floor = __webpack_require__(18);
-	var Goup = __webpack_require__(20);
-	var Toast = __webpack_require__(21);
-	var Header = __webpack_require__(23);
-	var ListWrap = __webpack_require__(24);
-	var SelfCenter = __webpack_require__(27);
-	var Detail = __webpack_require__(28);
-	var FloatFixed = __webpack_require__(29);
-	var Publish = __webpack_require__(30);
-	var Login = __webpack_require__(31);
+	var Floor = __webpack_require__(21);
+	var Goup = __webpack_require__(23);
+	var Toast = __webpack_require__(24);
+	var Header = __webpack_require__(26);
+	var ListWrap = __webpack_require__(27);
+	var SelfCenter = __webpack_require__(18);
+	var Detail = __webpack_require__(29);
+	var FloatFixed = __webpack_require__(30);
+	var Publish = __webpack_require__(31);
+	var Login = __webpack_require__(32);
+	var Register = __webpack_require__(33);
 	var lib = __webpack_require__(13);
 	var goUp;
 	var AllComponents = React.createClass({
@@ -1626,6 +1850,9 @@
 				goUp.classList.add('hidden');
 			}
 		},
+		scroll: function scroll() {
+			img.fireLazyload();
+		},
 		componentDidMount: function componentDidMount() {
 			var self = this;
 			img.fireLazyload();
@@ -1638,19 +1865,24 @@
 
 			return React.createElement(
 				'div',
-				{ className: 'AllComponents' },
+				{ className: 'AllComponents', onScroll: this.scroll },
 				React.createElement(
 					'div',
 					{ className: 'mainList' },
-					React.createElement(Header, null),
-					React.createElement(Floor, { floor: this.props.floor, floorType: this.props.floorType }),
-					React.createElement(ListWrap, { listData: this.props.mainList })
+					React.createElement(
+						'div',
+						{ className: 'mainListWrap' },
+						React.createElement(Header, null),
+						React.createElement(Floor, { floor: this.props.floor, floorType: this.props.floorType }),
+						React.createElement(ListWrap, { img: img, listData: this.props.mainList })
+					)
 				),
 				React.createElement(FloatFixed, null),
-				React.createElement(Detail, { detail: this.props.detail, publish: this.props.publish }),
-				React.createElement(SelfCenter, null),
+				React.createElement(Detail, { img: img, detail: this.props.detail, publish: this.props.publish }),
+				React.createElement(SelfCenter, { img: img, selfcenter: this.props.selfcenter }),
 				React.createElement(Publish, { detail: this.props.detail, publish: this.props.publish }),
-				React.createElement(Login, { loginPart: this.props.loginPart }),
+				React.createElement(Login, { img: img, loginPart: this.props.loginPart }),
+				React.createElement(Register, { img: img, register: this.props.register }),
 				React.createElement(Goup, null),
 				React.createElement(Toast, null)
 			);
@@ -1666,7 +1898,179 @@
 
 	'use strict';
 
-	var Sticky = __webpack_require__(19);
+	var SelfcenterList = __webpack_require__(19);
+	var AppActions = __webpack_require__(14);
+	var SelfCenter = React.createClass({
+		displayName: 'SelfCenter',
+
+		touchmove: function touchmove(e) {
+			e.preventDefault();
+		},
+		goLogin: function goLogin() {
+			AppActions.setLogin({ selfcenter: true, active: true });
+		},
+		logout: function logout() {
+			AppActions.logout({ selfcenter: true });
+		},
+		render: function render() {
+			var selfcenter = this.props.selfcenter;
+			console.log(selfcenter);
+			var selfcenterData = selfcenter && selfcenter.data && selfcenter.data.docs;
+			var selfcenterList = selfcenterData && selfcenterData.map(function (data) {
+				return React.createElement(SelfcenterList, { data: data });
+			});
+			if (selfcenter.active) {
+				return React.createElement(
+					'div',
+					{ className: 'self-center' },
+					React.createElement(
+						'div',
+						{ className: 'self-center-wrap' },
+						React.createElement(
+							'div',
+							{ className: 'per-img', onTouchMove: this.touchmove.bind(this) },
+							React.createElement(
+								'div',
+								{ className: 'self-pic' },
+								React.createElement('img', { src: selfcenter.data.img || "../build/img/logo.png" })
+							),
+							React.createElement(
+								'div',
+								{ className: 'user-nick' },
+								selfcenter.data.name
+							)
+						),
+						React.createElement(
+							'div',
+							{ className: selfcenterData && selfcenterData.length ? "self-list" : "self-list no-self-list" },
+							selfcenterData && selfcenterData.length ? selfcenterList : React.createElement('img', { src: '../build/img/nodata.jpg' })
+						),
+						React.createElement(
+							'div',
+							{ className: 'loginandout', onTouchMove: this.touchmove.bind(this) },
+							React.createElement(
+								'div',
+								{ className: 'l-o', onClick: this.logout },
+								'注销'
+							)
+						)
+					)
+				);
+			} else {
+				return React.createElement(
+					'div',
+					{ className: 'self-center', onTouchMove: this.touchmove.bind(this) },
+					React.createElement(
+						'div',
+						{ className: 'self-center-wrap' },
+						React.createElement(
+							'div',
+							{ className: 'per-img' },
+							React.createElement(
+								'div',
+								{ className: 'self-pic' },
+								React.createElement('img', { src: '../build/img/logo.png' })
+							),
+							React.createElement(
+								'div',
+								{ className: 'user-nick' },
+								'未登录'
+							)
+						),
+						React.createElement(
+							'div',
+							{ className: 'self-list no-self-list' },
+							React.createElement('img', { src: '../build/img/nodata.jpg' })
+						),
+						React.createElement(
+							'div',
+							{ className: 'loginandout' },
+							React.createElement(
+								'div',
+								{ className: 'l-o', onClick: this.goLogin },
+								'登录'
+							)
+						)
+					)
+				);
+			}
+		}
+
+	});
+
+	module.exports = SelfCenter;
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var Tag = __webpack_require__(20);
+
+	var SelfcenterList = React.createClass({
+		displayName: "SelfcenterList",
+
+		render: function render() {
+			var data = this.props.data || {};
+			console.log(data);
+			var tags = data && data.tags;
+			var Tags = tags && tags.map(function (data) {
+				return React.createElement(Tag, { data: data });
+			});
+			return React.createElement(
+				"div",
+				{ className: "self-list-wrap" },
+				React.createElement(
+					"div",
+					{ className: "self-list-content" },
+					React.createElement(
+						"div",
+						{ className: "self-list-title" },
+						data.des
+					),
+					React.createElement(
+						"div",
+						{ className: "self-list-tags clear" },
+						Tags
+					)
+				)
+			);
+		}
+
+	});
+
+	module.exports = SelfcenterList;
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var Tag = React.createClass({
+		displayName: "Tag",
+
+		render: function render() {
+			var data = this.props.data;
+			return React.createElement(
+				"div",
+				{ className: "tag" },
+				data
+			);
+		}
+
+	});
+
+	module.exports = Tag;
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var Sticky = __webpack_require__(22);
 	var widthList = (function () {
 		var html = document.getElementsByTagName('html')[0];
 		var attr = html && html.getAttribute('data-dpr');
@@ -1763,7 +2167,7 @@
 	module.exports = Floor;
 
 /***/ },
-/* 19 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1843,7 +2247,7 @@
 	module.exports = Sticky;
 
 /***/ },
-/* 20 */
+/* 23 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1864,7 +2268,7 @@
 	module.exports = GoUp;
 
 /***/ },
-/* 21 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -1888,7 +2292,7 @@
 	'use strict';
 
 	var AppActions = __webpack_require__(11);
-	var AppStoresForToast = __webpack_require__(22);
+	var AppStoresForToast = __webpack_require__(25);
 	var timer = null;
 	var Toast = React.createClass({
 	    displayName: 'Toast',
@@ -2051,7 +2455,7 @@
 	module.exports = Toast;
 
 /***/ },
-/* 22 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2145,7 +2549,7 @@
 	module.exports = AppStoresForToast;
 
 /***/ },
-/* 23 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2153,6 +2557,7 @@
 	var Img = __webpack_require__(16);
 	var AppActions = __webpack_require__(14);
 	var AppActionsCommon = __webpack_require__(11);
+	var lib = __webpack_require__(13);
 	var Header = React.createClass({
 		displayName: 'Header',
 
@@ -2182,16 +2587,21 @@
 			AllComponents.scrollTop = 0;
 			mainList.classList.add('mainListforselfcenter');
 			selfCenterWrap.classList.remove('hidden');
-			FloatFixed.classList.remove('hidden');
+			setTimeout(function () {
+				FloatFixed.classList.remove('hidden');
+			}, 480);
+			AppActions.selfCenter();
 		},
 		showPublish: function showPublish() {
 			$.ajax({
-				url: 'http://localhost:3009/graduationDesign/api/lostAndFound/getUserOwn',
+				url: lib.returnHost() + 'graduationDesign/api/lostAndFound/isLogin',
 				dataType: "jsonp",
 				success: function success(data) {
 					if (data && data.status == true) {
 						AppActions.setPublish({ active: true });
-					} else {}
+					} else {
+						AppActions.setLogin({ active: true });
+					}
 				},
 				error: function error() {
 					AppActionsCommon.setToast({
@@ -2212,7 +2622,7 @@
 					React.createElement(
 						'div',
 						{ className: 'header-showl', onClick: this.showSelfCenter },
-						React.createElement(Img, { src: '../build/img/btn_self.png', rname: 'img-box' })
+						React.createElement(Img, { src: '../build/img/btn_self.png', 'static': true, rname: 'img-box' })
 					),
 					React.createElement(
 						'div',
@@ -2231,7 +2641,7 @@
 					React.createElement(
 						'div',
 						{ className: 'header-showr', onClick: this.showPublish },
-						React.createElement(Img, { src: '../build/img/edit.png', rname: 'img-box' })
+						React.createElement(Img, { src: '../build/img/edit.png', 'static': true, rname: 'img-box' })
 					)
 				)
 			);
@@ -2242,23 +2652,24 @@
 	module.exports = Header;
 
 /***/ },
-/* 24 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var Img = __webpack_require__(16);
-	var List = __webpack_require__(25);
+	var List = __webpack_require__(28);
 	var ListWrap = React.createClass({
 		displayName: 'ListWrap',
 
 		render: function render() {
+			var img = this.props.img;
 			var list = this.props.listData.list.map(function (data) {
-				return React.createElement(List, { data: data });
+				return React.createElement(List, { img: img, data: data });
 			});
 			return React.createElement(
 				'div',
-				{ className: 'list-wrap' },
+				{ className: 'list-wrap overflowScrolling' },
 				list
 			);
 		}
@@ -2268,19 +2679,23 @@
 	module.exports = ListWrap;
 
 /***/ },
-/* 25 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var Img = __webpack_require__(16);
-	var Tag = __webpack_require__(26);
+	var Tag = __webpack_require__(20);
 	var AppActions = __webpack_require__(14);
 	var List = React.createClass({
 		displayName: 'List',
 
 		setSelfDetail: function setSelfDetail(params) {
 			AppActions.setSelfDetail(params);
+		},
+		componentDidUpdate: function componentDidUpdate() {
+			var img = this.props.img;
+			img.fireLazyload();
 		},
 		render: function render() {
 			var data = this.props.data;
@@ -2297,7 +2712,7 @@
 					React.createElement(
 						'div',
 						{ className: 'list-head' },
-						React.createElement(Img, { src: data.img, rname: 'p-pic' }),
+						React.createElement(Img, { src: data.img || '../build/img/logo.png', 'static': data.img ? false : true, rname: 'p-pic' }),
 						React.createElement(
 							'div',
 							{ className: 'p-name' },
@@ -2312,7 +2727,7 @@
 					React.createElement(
 						'div',
 						{ className: 'list-content' },
-						React.createElement(Img, { src: data.ttImg, rname: 'content-img' }),
+						data.ttimg ? React.createElement(Img, { src: data.ttimg, rname: 'content-img' }) : React.createElement('div', null),
 						React.createElement(
 							'div',
 							{ className: 'content-text-tag', onClick: function () {
@@ -2339,82 +2754,16 @@
 	module.exports = List;
 
 /***/ },
-/* 26 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	var Tag = React.createClass({
-		displayName: "Tag",
-
-		render: function render() {
-			var data = this.props.data;
-			return React.createElement(
-				"div",
-				{ className: "tag" },
-				data
-			);
-		}
-
-	});
-
-	module.exports = Tag;
-
-/***/ },
-/* 27 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	var SelfCenter = React.createClass({
-		displayName: "SelfCenter",
-
-		touchmove: function touchmove(e) {
-			e.preventDefault();
-		},
-		render: function render() {
-			return React.createElement(
-				"div",
-				{ className: "self-center", onTouchMove: this.touchmove.bind(this) },
-				React.createElement(
-					"div",
-					{ className: "self-center-wrap hidden" },
-					React.createElement(
-						"div",
-						{ className: "self-header" },
-						"个人中心"
-					),
-					React.createElement(
-						"div",
-						{ className: "per-img" },
-						React.createElement(
-							"div",
-							{ className: "self-pic" },
-							React.createElement("img", { src: "../build/img/pp-pic.png" })
-						),
-						React.createElement(
-							"div",
-							{ className: "user-nick" },
-							"王蛋蛋"
-						)
-					),
-					React.createElement("div", { className: "self-list" })
-				)
-			);
-		}
-
-	});
-
-	module.exports = SelfCenter;
-
-/***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var AppActions = __webpack_require__(14);
-	var Tag = __webpack_require__(26);
+	var lib = __webpack_require__(13);
+	var Img = __webpack_require__(16);
+	var Tag = __webpack_require__(20);
+	var twice = 1;
 	var Detail = React.createClass({
 		displayName: 'Detail',
 
@@ -2427,9 +2776,14 @@
 			} else if (!detail.active && !publish.active) {
 				mainList.classList.remove('mainListforDetail');
 			}
+			if (twice < 3 && detail.active == true) {
+				var img = this.props.img;
+				img.fireLazyload();
+				twice++;
+			}
 		},
 		touchMove: function touchMove(e) {
-			//e.preventDefault();
+			e.preventDefault();
 		},
 		back: function back() {
 			AppActions.setSelfDetail({ back: true });
@@ -2443,9 +2797,7 @@
 			});
 			return React.createElement(
 				'div',
-				{ className: detail && detail.active ? "detail detail-act" : "detail", onTouchMove: function (e) {
-						self.touchMove(e);
-					} },
+				{ className: detail && detail.active ? "detail detail-act" : "detail" },
 				React.createElement(
 					'div',
 					{ className: 'detail-wrap' },
@@ -2465,14 +2817,14 @@
 					),
 					React.createElement(
 						'div',
-						{ className: 'detail-content' },
+						{ className: 'detail-content overflowScrolling' },
 						React.createElement(
 							'div',
 							{ className: 'detail-c-p-message' },
 							React.createElement(
 								'div',
 								{ className: 'detail-pp-img' },
-								React.createElement('img', { src: data.img || "../build/img/pp-pic.png" })
+								React.createElement('img', { src: data.img || "../build/img/logo.png" })
 							),
 							React.createElement(
 								'div',
@@ -2528,7 +2880,7 @@
 						React.createElement(
 							'div',
 							{ className: 'detail-b-img' },
-							data.ttImg ? React.createElement('img', { src: data.ttImg }) : React.createElement('div', null)
+							data.ttimg ? React.createElement('img', { src: lib.returnHost() + data.ttimg }) : React.createElement('div', null)
 						)
 					)
 				)
@@ -2540,7 +2892,7 @@
 	module.exports = Detail;
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2565,14 +2917,16 @@
 	module.exports = FloatFixed;
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var AppActions = __webpack_require__(14);
 	var AppActionsCommon = __webpack_require__(11);
+	var lib = __webpack_require__(13);
 	var queryData = {}; //ttimg
+	var timer = null;
 	var Publish = React.createClass({
 		displayName: 'Publish',
 
@@ -2587,10 +2941,10 @@
 			}
 		},
 		submit: function submit(params) {
-			if (!queryData || queryData.des == "描述......" || !queryData.des || !queryData.type || !queryData.itemType) {
+			if (!queryData || queryData.des == "描述......" || !queryData.des || !queryData.type || !queryData.itemType || !queryData.Ltime || !queryData.area) {
 				AppActionsCommon.setToast({
 					title: "失物招领提示",
-					content: '请填写描述、类别、分类才可以提交'
+					content: '请填写完整信息，再提交'
 				});
 			} else {
 				AppActions.publish({
@@ -2640,7 +2994,6 @@
 			jiantou.classList.add('jiantouActive');
 		},
 		choose: function choose(params) {
-			//chooseClass':'.fl1 choose',"class":'.fl1 .jiantou',"id":"J_flMain0":,e:e
 			var chooseClass = params.chooseClass;
 			var className = params['class'];
 			var id = params.id;
@@ -2662,12 +3015,53 @@
 					queryData[type] = choose.innerHTML;
 				}
 			}
-			console.log(queryData);
 		},
 		onTextChange: function onTextChange(params) {
-			var target = params.ev.target;
-			queryData.des = target.value;
-			console.log(queryData, target);
+			clearTimeout(timer);
+			timer = setTimeout(function () {
+				var target = params.ev.target;
+				queryData.des = target.value;
+			}, 200);
+		},
+		upLoad: function upLoad(ev) {
+			var target = ev.target;
+			if (target && target.files && target.files.length > 0) {
+				var fileObj = target.files[0]; //获取文件对象
+				var FileController = lib.returnHost() + "graduationDesign/api/lostAndFound/upload_file"; // 接收上传文件的后台地址
+				// FormData 对象
+				var form = new FormData();
+				form.append("file", fileObj); // 文件对象
+				// XMLHttpRequest 对象
+				var xhr = new XMLHttpRequest();
+				xhr.open("post", FileController, true);
+
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState == 4) {
+						if (xhr.status == 200) {
+							var response = xhr.responseText;
+							var J_pzImg = document.querySelector("#J_pzImg");
+							try {
+								response = JSON.parse(response);
+							} catch (ex) {
+								console.log(ex);
+							}
+							J_pzImg.src = lib.returnHost() + response.url;
+							queryData.ttimg = response.url;
+							AppActionsCommon.setToast({
+								title: '失物招领提示',
+								type: 'toast',
+								content: '上传成功'
+							});
+						}
+					}
+				};
+				xhr.send(form);
+			} else {
+				AppActionsCommon.setToast({
+					title: '失物招领提示',
+					content: '请选择一个图片！'
+				});
+			}
 		},
 		render: function render() {
 			var publish = this.props.publish;
@@ -2733,7 +3127,7 @@
 									React.createElement(
 										'form',
 										{ method: 'post', enctype: 'multipart/form-data' },
-										React.createElement('input', { type: 'file', id: 'file', name: 'myfile', accept: 'image/*;capture=camera', style: { "width": "1.6rem", "height": "1.6rem", "opacity": 0, "border": 0 } })
+										React.createElement('input', { type: 'file', id: 'file', accept: 'image/*;capture=camera', style: { "width": "1.6rem", "height": "1.6rem", "opacity": 0, "border": 0 }, onChange: this.upLoad.bind(this) })
 									)
 								)
 							),
@@ -2946,32 +3340,17 @@
 								React.createElement(
 									'li',
 									null,
-									'教学区一号楼'
+									'教学区南一门'
 								),
 								React.createElement(
 									'li',
 									null,
-									'教学区三号楼'
+									'生活区南一门'
 								),
 								React.createElement(
 									'li',
 									null,
-									'教学区五号楼'
-								),
-								React.createElement(
-									'li',
-									null,
-									'教学区七号楼'
-								),
-								React.createElement(
-									'li',
-									null,
-									'教学区九号楼'
-								),
-								React.createElement(
-									'li',
-									null,
-									'教学区十一号楼'
+									'运动场南一门'
 								)
 							)
 						),
@@ -2984,32 +3363,17 @@
 								React.createElement(
 									'li',
 									null,
-									'教学区二号楼'
+									'教学区南二门'
 								),
 								React.createElement(
 									'li',
 									null,
-									'教学区四号楼'
+									'生活区南二门'
 								),
 								React.createElement(
 									'li',
 									null,
-									'教学区六号楼'
-								),
-								React.createElement(
-									'li',
-									null,
-									'教学区八号楼'
-								),
-								React.createElement(
-									'li',
-									null,
-									'教学区十号楼'
-								),
-								React.createElement(
-									'li',
-									null,
-									'教学区十二号楼'
+									'运动场南二门'
 								)
 							)
 						)
@@ -3022,25 +3386,276 @@
 	module.exports = Publish;
 
 /***/ },
-/* 31 */
-/***/ function(module, exports) {
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
+	var AppActions = __webpack_require__(14);
+	var AppActionsCommon = __webpack_require__(11);
+	var twice = 1;
+	var Img = __webpack_require__(16);
+	var timer = null;
+	var timerPhone = null;
+	var timerpassword = null;
+	var loginArea = {};
 	var Login = React.createClass({
-		displayName: "Login",
+		displayName: 'Login',
 
 		touchmove: function touchmove(e) {
 			e.preventDefault();
 		},
+		componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+			var loginPart = this.props.loginPart;
+			if (twice < 3 && loginPart.active == true) {
+				var img = this.props.img;
+				clearTimeout(timer);
+				timer = setTimeout(function () {
+					img.fireLazyload();
+					twice++;
+				}, 500);
+			}
+		},
+		back: function back() {
+			AppActions.setLogin({
+				active: false
+			});
+		},
+		phone: function phone(ev) {
+			clearTimeout(timerPhone);
+			timerPhone = setTimeout(function () {
+				loginArea.phone = ev.target.value;
+			}, 100);
+		},
+		password: function password(ev) {
+			clearTimeout(timerpassword);
+			timerpassword = setTimeout(function () {
+				loginArea.password = ev.target.value;
+			}, 100);
+		},
+		setRegister: function setRegister(params) {
+			AppActions.setRegister({
+				active: true
+			});
+		},
+		goLogin: function goLogin() {
+			if (!loginArea || !loginArea.phone || !loginArea.password) {
+				AppActionsCommon.setToast({
+					title: '失物招领提示',
+					content: '请正确填写手机号码和密码！'
+				});
+			} else {
+				var loginPart = this.props.loginPart;
+				loginArea.selfcenter = loginPart.selfcenter;
+				AppActions.goLogin(loginArea);
+			}
+		},
 		render: function render() {
 			var loginPart = this.props.loginPart;
-			return React.createElement("div", { className: loginPart.active ? "loginpart loginpartAct" : "loginpart", onTouchMove: this.touchmove.bind(this) });
+			return React.createElement(
+				'div',
+				{ className: loginPart.active ? "loginpart loginpartAct" : "loginpart", onTouchMove: this.touchmove.bind(this) },
+				React.createElement(
+					'div',
+					{ className: 'loginpart-wrap' },
+					React.createElement(
+						'div',
+						{ className: 'loginpart-head' },
+						React.createElement(
+							'div',
+							{ className: 'back', onClick: this.back },
+							React.createElement('img', { src: '../build/img/close.png' })
+						),
+						React.createElement(
+							'div',
+							{ className: 'loginpart-text' },
+							'登录'
+						)
+					),
+					React.createElement(
+						'div',
+						{ className: 'part-l' },
+						React.createElement(Img, { src: '../build/img/logo.png', 'static': true, rname: 'part-logo' }),
+						React.createElement(
+							'div',
+							{ className: 'login-input' },
+							React.createElement(
+								'div',
+								{ className: 'login-input-wrap' },
+								React.createElement(
+									'div',
+									{ className: 'loging-phone' },
+									React.createElement(Img, { src: '../build/img/icon_shoujihao.png', 'static': true, rname: 'phone-img' }),
+									React.createElement('input', { className: 'part-input', type: 'text', onChange: this.phone, placeholder: '请输入手机号' })
+								),
+								React.createElement(
+									'div',
+									{ className: 'login-password' },
+									React.createElement(Img, { src: '../build/img/icon_mimaqueren.png', 'static': true, rname: 'password-img' }),
+									React.createElement('input', { className: 'part-input', type: 'password', onChange: this.password.bind(this), placeholder: '请输入密码' })
+								)
+							)
+						),
+						React.createElement(
+							'div',
+							{ className: 'login-reg-btn' },
+							React.createElement(
+								'div',
+								{ className: 'login-reg-btn-wrap' },
+								React.createElement(
+									'div',
+									{ className: 'login-btn', onClick: this.goLogin },
+									'登录'
+								),
+								React.createElement(
+									'div',
+									{ className: 'reg-btn', onClick: this.setRegister },
+									'注册'
+								)
+							)
+						)
+					)
+				)
+			);
 		}
 
 	});
 
 	module.exports = Login;
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var AppActions = __webpack_require__(14);
+	var AppActionsCommon = __webpack_require__(11);
+	var Img = __webpack_require__(16);
+	var timer = null;
+	var regData = {};
+	var twice = 1;
+	var Register = React.createClass({
+		displayName: 'Register',
+
+		touchMove: function touchMove(e) {
+			e.preventDefault();
+		},
+		back: function back() {
+			AppActions.setRegister({
+				active: false
+			});
+		},
+		register: function register() {
+			if (regData.password != regData.passwordagin) {
+				AppActionsCommon.setToast({
+					title: '失物招领提示',
+					content: '两次密码不一致！'
+				});
+			} else if (!regData.name || !regData.phone || !regData.password || !regData.passwordagin) {
+				AppActionsCommon.setToast({
+					title: '失物招领提示',
+					content: '请补充完整注册信息！'
+				});
+			} else {
+				AppActions.register(regData);
+			}
+		},
+		reg: function reg(params) {
+			clearTimeout(timer);
+			timer = setTimeout(function () {
+				var ele = params.ev.target;
+				var type = params.type;
+				regData[type] = ele.value;
+			}, 200);
+		},
+		componentDidUpdate: function componentDidUpdate() {
+			var register = this.props.register;
+			if (twice < 3 && register.active == true) {
+				var img = this.props.img;
+				img.fireLazyload();
+				twice++;
+			}
+		},
+		render: function render() {
+			var register = this.props.register;
+			var self = this;
+			return React.createElement(
+				'div',
+				{ className: register.active ? "register register-act" : "register", onTouchMove: this.touchMove.bind(this) },
+				React.createElement(
+					'div',
+					{ className: 'register-wrap' },
+					React.createElement(
+						'div',
+						{ className: 'register-head' },
+						React.createElement(
+							'div',
+							{ className: 'back', onClick: this.back },
+							React.createElement('img', { src: '../build/img/btn_fanhui.png' })
+						),
+						React.createElement(
+							'div',
+							{ className: 'register-text' },
+							'注册'
+						)
+					),
+					React.createElement(
+						'div',
+						{ className: 'part-r' },
+						React.createElement(
+							'div',
+							{ className: 'reg-input' },
+							React.createElement(
+								'div',
+								{ className: 'reg-input-wrap' },
+								React.createElement(
+									'div',
+									{ className: 'reg-phone' },
+									React.createElement(Img, { src: '../build/img/icon_nicheng.png', 'static': true, rname: 'phone-img' }),
+									React.createElement('input', { className: 'part-input', type: 'text', placeholder: '请设置昵称', onChange: function (ev) {
+											self.reg({ type: "name", ev: ev });
+										} })
+								),
+								React.createElement(
+									'div',
+									{ className: 'reg-password' },
+									React.createElement(Img, { src: '../build/img/icon_shoujihao.png', 'static': true, rname: 'password-img' }),
+									React.createElement('input', { className: 'part-input', type: 'text', placeholder: '请输入手机号码', onChange: function (ev) {
+											self.reg({ type: "phone", ev: ev });
+										} })
+								),
+								React.createElement(
+									'div',
+									{ className: 'reg-phone' },
+									React.createElement(Img, { src: '../build/img/icon_mimaqueren.png', 'static': true, rname: 'phone-img' }),
+									React.createElement('input', { className: 'part-input', type: 'password', placeholder: '请输入密码', onChange: function (ev) {
+											self.reg({ type: "password", ev: ev });
+										} })
+								),
+								React.createElement(
+									'div',
+									{ className: 'reg-password' },
+									React.createElement(Img, { src: '../build/img/icon_mimaqueren.png', 'static': true, rname: 'password-img' }),
+									React.createElement('input', { className: 'part-input', type: 'password', placeholder: '请再次输入密码', onChange: function (ev) {
+											self.reg({ type: "passwordagin", ev: ev });
+										} })
+								)
+							)
+						)
+					),
+					React.createElement(
+						'div',
+						{ className: 'regBtn', onClick: this.register },
+						'注册'
+					)
+				)
+			);
+		}
+
+	});
+
+	module.exports = Register;
 
 /***/ }
 /******/ ]);

@@ -35,14 +35,40 @@ AppDispatcher.register(function(payload) {
       return setPublish(action.params);
     case actionType.publish:
       return publish(action.params);
+    case actionType.setLogin:
+      return setLogin(action.params);
+    case actionType.goLogin:
+      return goLogin(action.params);
+    case actionType.setRegister:
+      return setRegister(action.params);
+    case actionType.register:
+      return register(action.params);
+    case actionType.selfCenter:
+      return selfCenter(action.params);      
+    case actionType.logout:
+      return logout(action.params);  
     default:
       return true;
   }
 });
 
 AppStores.data = {
+  error:{
+      display:{display:"none"},
+      text:{
+        p1:"",
+        p2:""
+      }
+  },
+  loading:{
+      display:"block"
+  },
   mainList:{},
-  selfCenter:{},
+  selfcenter:{
+      active:false,
+      data:{
+      }
+  },
   floorType:'found',
   detail:{
       active:false,
@@ -68,6 +94,9 @@ AppStores.data = {
   },
   loginPart:{
     active:false,
+  },
+  register:{
+      active:false
   }
 }
 
@@ -77,8 +106,9 @@ function mtop(params) {
           "type" : "found" 
         };
   $.ajax({
-    url:'http://localhost:3009/graduationDesign/api/lostAndFound/getPosts',
+    url:lib.returnHost()+'graduationDesign/api/lostAndFound/getPosts',
     dataType:'jsonp',
+    timeout:10000,
     data:{
       queryThing:JSON.stringify(queryThing),
       "page":1
@@ -93,24 +123,158 @@ function mtop(params) {
       }
     },
     error:function(ex) {
-      console.log(ex);
+      AppStores.data.loading = {display:'none'};
+      AppStores.data.error = {
+        display:{display:"block"},
+        text:{
+          p1:"请求失败",
+          p2: JSON.stringify(ex)|| "网络异常，获取数据失败！"
+        }
+      };
+      AppStores.emitChange();
     }
   });
 }
 
+function goLogin(params) {
+    $.ajax({
+      url:lib.returnHost()+'graduationDesign/api/lostAndFound/login',
+      data:params,
+      dataType:'jsonp',
+      success:function(data) {
+          if(data && data.status==true) {
+              AppActionsCommon.setToast({
+                title:'失物招领提示',
+                type:'toast',
+                content:'登录成功！'
+              });    
+              setTimeout(function() {
+                  if(params && params.selfcenter) {
+                      selfCenter();
+                  }
+                  AppStores.data.loginPart.active = false;
+                  AppStores.emitChange(); 
+              },1500);
+                    
+          }else {
+              AppActionsCommon.setToast({
+                  title:'失物招领提示',
+                  content:data.message
+              });   
+          }
+      },
+      error:function(ex) {
+          AppActionsCommon.setToast({
+              title:'失物招领提示',
+              content:"网络异常！"
+          });  
+      }
+    });
+}
+
+function logout(params) {
+    $.ajax({
+      url:lib.returnHost()+"graduationDesign/api/lostAndFound/logout",
+      dataType:'jsonp',
+      success:function(data) {
+          if(data && data.status==true) {
+              AppActionsCommon.setToast({
+                title:'失物招领提示',
+                type:'toast',
+                content:"注销成功!"
+              });
+              if(params && params.selfcenter) {
+                  console.log(333333);
+                  selfCenter()
+              }
+          }
+      },
+      error:function(ex) {
+          AppActionsCommon.setToast({
+              title:'失物招领提示',
+              content:"网络异常！"
+          });  
+      }
+    })
+}
+
+function register(params) {
+    $.ajax({
+      url:lib.returnHost()+'graduationDesign/api/lostAndFound/reg',
+      dataType:'jsonp',
+      data:params,
+      success:function(data) {
+          if(data && data.status==true) {
+              AppActionsCommon.setToast({
+                  title:'失物招领提示',
+                  type:'toast',
+                  content:"注册成功！"
+              });
+
+              setTimeout(function() {
+                  setRegister({active:false});
+              },1500);
+
+          }else {
+              AppActionsCommon.setToast({
+                  title:'失物招领提示',
+                  content:data.message || "注册失败！"
+              });  
+          }
+      },
+      error:function(ex) {
+          AppActionsCommon.setToast({
+              title:'失物招领提示',
+              content:"网络异常！"
+          });  
+      }
+    })
+}
+
+function selfCenter() {
+    $.ajax({
+      url:lib.returnHost()+'graduationDesign/api/lostAndFound/getUserOwn',
+      dataType:'jsonp',
+      data:{},
+      success:function(data) {
+          if(data && data.status==true) {
+              AppStores.data.selfcenter.active = true;
+              AppStores.data.selfcenter.data = data.entry;
+              AppStores.emitChange();
+          }else {
+              AppStores.data.selfcenter.active = false;
+              AppStores.data.selfcenter.data = {};
+              AppStores.emitChange();
+          }
+      },
+      error:function(ex) {
+          AppActionsCommon.setToast({
+              title:'失物招领提示',
+              content:"网络异常,获取个人信息失败！"
+          });  
+      }
+    });
+}
+
 function setLogin(params) {
-    AppStores.data.publish.active = params.active;
+    AppStores.data.loginPart.active = params.active;
+    AppStores.data.loginPart.selfcenter = params.selfcenter;
     AppStores.emitChange();
 }
 
 function setPublish(params) {
-    AppStores.data.loginPart.active = params.active;
+    AppStores.data.publish.active = params.active;
     AppStores.emitChange();
+}
+
+function setRegister(params) {
+  AppStores.data.register.active = params.active;
+  AppStores.emitChange();
 }
 
 function publish(params) {
     $.ajax({
-      url:'http://localhost:3009/graduationDesign/api/lostAndFound/post',
+      url:lib.returnHost()+'graduationDesign/api/lostAndFound/post',
       dataType:'jsonp',
       data:params.data,
       success:function(data) {
@@ -122,7 +286,14 @@ function publish(params) {
               }); 
               setTimeout(function() {
                   AppStores.data.publish.active = false;
-                  AppStores.emitChange();                
+                  AppStores.emitChange();
+                  var params = {
+                      queryThing:{
+                        type:'found',
+                      },
+                      page:1
+                  };
+                  setMainList(params);        
               },1500);
           }else {
               AppActionsCommon.setToast({
@@ -145,10 +316,10 @@ function publish(params) {
 function setMainList(params) {
     var queryThing = params.queryThing;
     $.ajax({
-      url:'http://localhost:3009/graduationDesign/api/lostAndFound/getPosts',
+      url:lib.returnHost()+'graduationDesign/api/lostAndFound/getPosts',
       dataType:'jsonp',
       data:{
-        queryThing:JSON.stringify(queryThing),
+        queryThing:encodeURIComponent(encodeURIComponent(JSON.stringify(queryThing))),
         page:params.page
       },
       success:function(data) {
@@ -156,6 +327,7 @@ function setMainList(params) {
               var entry = data.entry;
               AppStores.data.mainList.list = entry.docs;
               AppStores.data.floorType = params.queryThing.type;
+              AppStores.emitChange();
               AppStores.emitChange();
           }
       },
@@ -172,7 +344,7 @@ function setSelfDetail(params) {
       return;
     }
     $.ajax({
-      url:'http://localhost:3009/graduationDesign/api/lostAndFound/getDetail',
+      url:lib.returnHost()+'graduationDesign/api/lostAndFound/getDetail',
       dataType:'jsonp',
       data:{
         ArticleID:params.ArticleID
@@ -193,7 +365,7 @@ function setSelfDetail(params) {
 
 function setSelfCenter(params) {
     $.ajax({
-      url:'http://localhost:3009/graduationDesign/api/lostAndFound/getUserOwn',
+      url:lib.returnHost()+'graduationDesign/api/lostAndFound/getUserOwn',
       dataType:'jsonp',
       success:function(data) {
         if(data && data.status == true) {
@@ -229,12 +401,9 @@ AppStores.initData = {
     loading:{
       display:"block"
     },
-    selfCenter:{
-        haveData:false,
+    selfcenter:{
+        active:false,
         data:{
-          pic:'',
-          name:'',
-          list:[]
         }
     },
     floorType:'found',
@@ -262,6 +431,9 @@ AppStores.initData = {
     },
     loginPart:{
       active:false,
+    },
+    register:{
+      active:false
     }
 }
 

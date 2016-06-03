@@ -29,7 +29,7 @@
             }
             else {
                 return (
-                        <AllComponents loginPart = {this.state.loginPart} publish = {this.state.publish} detail = {this.state.detail} floor = {this.state.floor} floorType = {this.state.floorType} mainList = {this.state.mainList} selfCenter = {this.state.selfCenter} />
+                        <AllComponents register = {this.state.register} loginPart = {this.state.loginPart} publish = {this.state.publish} detail = {this.state.detail} floor = {this.state.floor} floorType = {this.state.floorType} mainList = {this.state.mainList} selfcenter = {this.state.selfcenter} />
                 )
             }
 
