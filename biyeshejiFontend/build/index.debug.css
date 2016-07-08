@@ -1131,7 +1131,6 @@ input[type="search"] {
 .content-img {
   width: 2.533333rem;
   height: 2.533333rem;
-  margin-right: 0.4rem;
 }
 
 .content-img img {
@@ -1142,6 +1141,7 @@ input[type="search"] {
 .content-text-tag {
   -webkit-box-flex: 1;
   cursor: pointer;
+  margin-left: 0.4rem;
 }
 
 .content-des {

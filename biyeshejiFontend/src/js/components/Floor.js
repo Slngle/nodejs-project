@@ -10,6 +10,7 @@ var widthList = (function(){
 		return 156;
 	}
 })();
+var lib = require('../lib/index');
 var AppActions = require('../actions/AppActions');
 var Floor = React.createClass({
 	getTop:function(e) {
@@ -39,7 +40,9 @@ var Floor = React.createClass({
 		setTimeout(function() {
 			var comStickyWrap = document.querySelector('.com-sticky-wrap');
 			var activeType = document.querySelector('.type-active'); 
-			comStickyWrap.scrollLeft = activeType.offsetLeft + activeType.offsetWidth - comStickyWrap.offsetWidth + widthList;
+			//comStickyWrap.scrollLeft = activeType.offsetLeft + activeType.offsetWidth - comStickyWrap.offsetWidth + widthList;
+			var comStickyWrapScrollLeft = activeType.offsetLeft + activeType.offsetWidth - comStickyWrap.offsetWidth + widthList;
+			lib.moveFn(comStickyWrap,{scrollLeft:comStickyWrapScrollLeft});
 		},20);
 	},
 	render: function() {

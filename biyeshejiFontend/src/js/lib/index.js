@@ -26,11 +26,51 @@ lib.throttle = function (func, wait) {
     };
 }
 
+lib.getStyle = function(obj,name) {
+    if(obj.currentStyle){
+        return obj.currentStyle[name];
+    }else{
+        return getComputedStyle(obj,true)[name];
+    }   
+}
+
 //运动函数
-lib.moveFn = function(params) {
-    var timer = null;
-    var time = params.time;
+lib.moveFn = function(obj,json,fnEnd) {    
+    clearInterval(obj.timer);
+    obj.timer=setInterval(function(){
+        var beStart=true;
+        for(var sty in json){
+            var arr=0;
+            if(sty=='opacity') {
+                arr=Math.round(parseFloat(lib.getStyle(obj,sty))*100);
+            }else if(sty=='scrollLeft') {
+                var styData = obj.scrollLeft;
+                arr=parseInt(styData);
+            }else{
+                arr=parseInt(lib.getStyle(obj,sty));
+            }
+            var speed=(json[sty]-arr)/4;
+            speed=speed>0?Math.ceil(speed):Math.floor(speed);
+            if(json[sty]!=arr) {
+                beStart=false;
+            }
+        
+            if(sty=='opacity'){
+                obj.style.filter='alpha(opacity:'+(arr+speed)+')'
+                obj.style.opacity=(arr+speed)/100
+            }else if(sty=='scrollLeft'){
+                obj.scrollLeft=arr+speed;
+            }else{   
+                obj.style[sty]=arr+speed+'px'
+            }
+            if(beStart){
+                clearInterval(obj.timer);
+                if(fnEnd){fnEnd();}
+            }
+            
+        }
     
+    },30);
 }
 
 //获取链接里的参数
@@ -92,14 +132,10 @@ lib.spm = function() {
 lib.returnHost = function(params) {
     var hostname = window.location.hostname;
     var https = params && params.forHttps?"":"http:";
-    if(hostname.match("daily")) {
-        return (https+'//daily.52shangou.com/');
-    }else if(hostname.match("gray")) {
-        return (https+'//gray.52shangou.com/');
-    }else if(hostname.match("h5") || hostname.match("www")) {
-        return (https+'//www.52shangou.com/');
+    if(hostname.match("120.26.200.85")) {
+        return (https+'//120.26.200.85:3009/');
     }else {
-        return (https+'//10.17.72.128:3009/');
+        return (https+'//localhost:3009/');
     }
 }
 

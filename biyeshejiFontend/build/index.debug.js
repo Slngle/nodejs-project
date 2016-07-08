@@ -98,35 +98,43 @@
 /***/ function(module, exports) {
 
 	//异常流
-	"use strict";
+	'use strict';
 
 	var Error = React.createClass({
-	    displayName: "Error",
+	    displayName: 'Error',
 
 	    render: function render() {
 	        var data = this.props.error;
+	        var displayAttr = data && data.display && data.display.display;
+
+	        if (displayAttr != 'none') {
+	            var imgURL = '//imgsize.52shangou.com/img/n/11/30/1448855302897_6565.png';
+	        } else {
+	            var imgURL = '';
+	        }
+
 	        return React.createElement(
-	            "div",
-	            { className: "error-wrap", style: data.display },
+	            'div',
+	            { className: 'error-wrap', style: data.display },
 	            React.createElement(
-	                "div",
-	                { className: "error-context" },
+	                'div',
+	                { className: 'error-context' },
 	                React.createElement(
-	                    "div",
-	                    { className: "error-img" },
-	                    React.createElement("img", { src: "//imgsize.52shangou.com/img/n/11/30/1448855302897_6565.png" })
+	                    'div',
+	                    { className: 'error-img' },
+	                    React.createElement('img', { src: imgURL })
 	                ),
 	                React.createElement(
-	                    "div",
-	                    { className: "error-text" },
+	                    'div',
+	                    { className: 'error-text' },
 	                    React.createElement(
-	                        "p",
-	                        { className: "p-top" },
+	                        'p',
+	                        { className: 'p-top' },
 	                        data.text.p1
 	                    ),
 	                    React.createElement(
-	                        "p",
-	                        { className: "p-bottom" },
+	                        'p',
+	                        { className: 'p-bottom' },
 	                        data.text.p2
 	                    )
 	                )
@@ -317,7 +325,6 @@
 	          content: "注销成功!"
 	        });
 	        if (params && params.selfcenter) {
-	          console.log(333333);
 	          selfCenter();
 	        }
 	      }
@@ -1383,10 +1390,51 @@
 	    };
 	};
 
+	lib.getStyle = function (obj, name) {
+	    if (obj.currentStyle) {
+	        return obj.currentStyle[name];
+	    } else {
+	        return getComputedStyle(obj, true)[name];
+	    }
+	};
+
 	//运动函数
-	lib.moveFn = function (params) {
-	    var timer = null;
-	    var time = params.time;
+	lib.moveFn = function (obj, json, fnEnd) {
+	    clearInterval(obj.timer);
+	    obj.timer = setInterval(function () {
+	        var beStart = true;
+	        for (var sty in json) {
+	            var arr = 0;
+	            if (sty == 'opacity') {
+	                arr = Math.round(parseFloat(lib.getStyle(obj, sty)) * 100);
+	            } else if (sty == 'scrollLeft') {
+	                var styData = obj.scrollLeft;
+	                arr = parseInt(styData);
+	            } else {
+	                arr = parseInt(lib.getStyle(obj, sty));
+	            }
+	            var speed = (json[sty] - arr) / 4;
+	            speed = speed > 0 ? Math.ceil(speed) : Math.floor(speed);
+	            if (json[sty] != arr) {
+	                beStart = false;
+	            }
+
+	            if (sty == 'opacity') {
+	                obj.style.filter = 'alpha(opacity:' + (arr + speed) + ')';
+	                obj.style.opacity = (arr + speed) / 100;
+	            } else if (sty == 'scrollLeft') {
+	                obj.scrollLeft = arr + speed;
+	            } else {
+	                obj.style[sty] = arr + speed + 'px';
+	            }
+	            if (beStart) {
+	                clearInterval(obj.timer);
+	                if (fnEnd) {
+	                    fnEnd();
+	                }
+	            }
+	        }
+	    }, 30);
 	};
 
 	//获取链接里的参数
@@ -1448,14 +1496,10 @@
 	lib.returnHost = function (params) {
 	    var hostname = window.location.hostname;
 	    var https = params && params.forHttps ? "" : "http:";
-	    if (hostname.match("daily")) {
-	        return https + '//daily.52shangou.com/';
-	    } else if (hostname.match("gray")) {
-	        return https + '//gray.52shangou.com/';
-	    } else if (hostname.match("h5") || hostname.match("www")) {
-	        return https + '//www.52shangou.com/';
+	    if (hostname.match("120.26.200.85")) {
+	        return https + '//120.26.200.85:3009/';
 	    } else {
-	        return https + '//10.17.72.128:3009/';
+	        return https + '//localhost:3009/';
 	    }
 	};
 
@@ -1759,49 +1803,30 @@
 	        var height = dataSize && dataSize.split('x') && dataSize.split('x')[1];
 	        var image = this.props.img || '../build/img/moren.png';
 	        var slider = this.props.slider;
-
+	        //var danwei = this.props.src && this.props.src.match(/\w{3}$/) && this.props.src.match(/\w{3}$/)[0];
 	        if (this.props['static']) {
 	            var src = this.props.src;
 	        } else {
 	            var src = lib.returnHost() + this.props.src;
 	        }
 
-	        if (dataSize && src.indexOf('|watermark') !== -1) {
-	            //带水印
-	            src += '|' + width + 'w_' + (height ? height + 'h_' : '') + 90 + 'q_100sh.jpg';
-	        } else if (dataSize) {
+	        if (dataSize) {
 	            //不带水印
-	            src += '@' + width + 'w_' + (height ? height + 'h_' : '') + 90 + 'q_100sh.jpg';
+	            src += '@' + width + '_' + (height ? height + '_' : 'null_') + 90;
 	        }
-	        console.log(src);
-	        if (slider == 'true') {
-	            if (this.props.link) {
-	                return React.createElement(
-	                    'a',
-	                    { href: this.props.link, className: "img" + className },
-	                    React.createElement('img', { src: src, 'data-img': src, 'data-cdn': 'no', className: 'lazyimg' })
-	                );
-	            } else {
-	                return React.createElement(
-	                    'div',
-	                    { className: "img" + className },
-	                    React.createElement('img', { src: src, 'data-img': src, 'data-cdn': 'no', className: 'lazyimg' })
-	                );
-	            }
+
+	        if (this.props.link) {
+	            return React.createElement(
+	                'a',
+	                { href: this.props.link, className: "img" + className },
+	                React.createElement('img', { src: src, 'data-src': src, 'data-cdn': 'no', className: 'lazyload-img' })
+	            );
 	        } else {
-	            if (this.props.link) {
-	                return React.createElement(
-	                    'a',
-	                    { href: this.props.link, className: "img" + className },
-	                    React.createElement('img', { src: src, 'data-src': src, 'data-cdn': 'no', className: 'lazyload-img' })
-	                );
-	            } else {
-	                return React.createElement(
-	                    'div',
-	                    { className: "img" + className },
-	                    React.createElement('img', { src: src, 'data-src': src, 'data-cdn': 'no', 'data-size': dataSize, className: 'lazyload-img' })
-	                );
-	            }
+	            return React.createElement(
+	                'div',
+	                { className: "img" + className },
+	                React.createElement('img', { src: src, 'data-src': src, 'data-cdn': 'no', 'data-size': dataSize, className: 'lazyload-img' })
+	            );
 	        }
 	    }
 	});
@@ -2082,6 +2107,7 @@
 			return 156;
 		}
 	})();
+	var lib = __webpack_require__(13);
 	var AppActions = __webpack_require__(14);
 	var Floor = React.createClass({
 		displayName: 'Floor',
@@ -2113,7 +2139,9 @@
 			setTimeout(function () {
 				var comStickyWrap = document.querySelector('.com-sticky-wrap');
 				var activeType = document.querySelector('.type-active');
-				comStickyWrap.scrollLeft = activeType.offsetLeft + activeType.offsetWidth - comStickyWrap.offsetWidth + widthList;
+				//comStickyWrap.scrollLeft = activeType.offsetLeft + activeType.offsetWidth - comStickyWrap.offsetWidth + widthList;
+				var comStickyWrapScrollLeft = activeType.offsetLeft + activeType.offsetWidth - comStickyWrap.offsetWidth + widthList;
+				lib.moveFn(comStickyWrap, { scrollLeft: comStickyWrapScrollLeft });
 			}, 20);
 		},
 		render: function render() {

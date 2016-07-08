@@ -16,51 +16,30 @@
             var height = dataSize && dataSize.split('x') && dataSize.split('x')[1];
             var image = this.props.img || '../build/img/moren.png';
             var slider = this.props.slider;
-            
+            //var danwei = this.props.src && this.props.src.match(/\w{3}$/) && this.props.src.match(/\w{3}$/)[0];
             if(this.props.static) {
                 var src = this.props.src;
             }else {
                 var src = lib.returnHost() + this.props.src;
             }
+            
+            if(dataSize){//不带水印
+                src += '@'+ width +'_'+ (height ? height + '_' : 'null_' ) + 90;
+            }
 
-            if(dataSize && src.indexOf('|watermark') !== -1){//带水印
-                src += '|'+ width +'w_'+ (height ? height + 'h_' : '' ) + 90 +'q_100sh.jpg';
-            }
-            else if(dataSize){//不带水印
-                src += '@'+ width +'w_'+ (height ? height + 'h_' : '' ) + 90 +'q_100sh.jpg';
-            }
-            console.log(src);
-            if(slider == 'true') {
-                if(this.props.link) {
-                    return (
-                        <a href={this.props.link} className={"img"+className}>
-                            <img src={src} data-img={src}  data-cdn="no" className="lazyimg"/>
-                        </a>
-                    );                
-                }
-                else {
-                    return (
-                        <div className={"img"+className}>
-                            <img src={src} data-img={src}  data-cdn="no" className="lazyimg"/>
-                        </div>
-                    );                 
-                }                
+            if(this.props.link) {
+                return (
+                    <a href={this.props.link} className={"img"+className}>
+                        <img src={src} data-src={src}  data-cdn="no" className="lazyload-img"/>
+                    </a>
+                );                
             }
             else {
-                if(this.props.link) {
-                    return (
-                        <a href={this.props.link} className={"img"+className}>
-                            <img src={src} data-src={src}  data-cdn="no" className="lazyload-img"/>
-                        </a>
-                    );                
-                }
-                else {
-                    return (
-                        <div className={"img"+className}>
-                            <img src={src} data-src={src} data-cdn="no" data-size={dataSize} className="lazyload-img"/>
-                        </div>
-                    );                 
-                }                
+                return (
+                    <div className={"img"+className}>
+                        <img src={src} data-src={src} data-cdn="no" data-size={dataSize} className="lazyload-img"/>
+                    </div>
+                );                 
             }
 
         }

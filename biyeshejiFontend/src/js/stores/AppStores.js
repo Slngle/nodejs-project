@@ -184,7 +184,6 @@ function logout(params) {
                 content:"注销成功!"
               });
               if(params && params.selfcenter) {
-                  console.log(333333);
                   selfCenter()
               }
           }
