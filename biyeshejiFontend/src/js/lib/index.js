@@ -132,9 +132,9 @@ lib.spm = function() {
 lib.returnHost = function(params) {
     var hostname = window.location.hostname;
     var https = params && params.forHttps?"":"http:";
-    if(hostname.match("120.26.200.85")) {
-        return (https+'//120.26.200.85:3009/');
-    }else {
+    if(hostname.match("shejingbingis.me")) {
+        return (https+'//120.26.207.101:3009/');
+    } else {
         return (https+'//localhost:3009/');
     }
 }

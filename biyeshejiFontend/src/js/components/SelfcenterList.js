@@ -3,7 +3,6 @@ var Tag = require('./Tag');
 var SelfcenterList = React.createClass({
 	render: function() {
 		var data = this.props.data || {};
-		console.log(data);
 		var tags = data && data.tags;
 		var Tags = tags && tags.map(function(data){
 			return (

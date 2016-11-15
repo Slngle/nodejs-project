@@ -1496,8 +1496,8 @@
 	lib.returnHost = function (params) {
 	    var hostname = window.location.hostname;
 	    var https = params && params.forHttps ? "" : "http:";
-	    if (hostname.match("120.26.200.85")) {
-	        return https + '//120.26.200.85:3009/';
+	    if (hostname.match("shejingbingis.me")) {
+	        return https + '//120.26.207.101:3009/';
 	    } else {
 	        return https + '//localhost:3009/';
 	    }
@@ -1939,7 +1939,6 @@
 		},
 		render: function render() {
 			var selfcenter = this.props.selfcenter;
-			console.log(selfcenter);
 			var selfcenterData = selfcenter && selfcenter.data && selfcenter.data.docs;
 			var selfcenterList = selfcenterData && selfcenterData.map(function (data) {
 				return React.createElement(SelfcenterList, { data: data });
@@ -2038,7 +2037,6 @@
 
 		render: function render() {
 			var data = this.props.data || {};
-			console.log(data);
 			var tags = data && data.tags;
 			var Tags = tags && tags.map(function (data) {
 				return React.createElement(Tag, { data: data });

@@ -12,7 +12,6 @@ var SelfCenter = React.createClass({
 	},
 	render: function() {
 		var selfcenter = this.props.selfcenter;
-		console.log(selfcenter);
 		var selfcenterData = selfcenter && selfcenter.data && selfcenter.data.docs;
 		var selfcenterList = selfcenterData && selfcenterData.map(function(data) {
 				return (

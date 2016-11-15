@@ -7,7 +7,6 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var settings = require('./settings');
-var flash = require('connect-flash');
 var multer  = require('multer');
 var lib = require('./lib/index.js');
 var app = express();
@@ -26,8 +25,6 @@ app.all('*', function(req, res, next) {
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-app.use(flash());
 app.use(session({
   secret: settings.cookieSecret,
   key: settings.db,//cookie name

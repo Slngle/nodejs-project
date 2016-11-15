@@ -5,12 +5,10 @@ var crypto = require('crypto'),
     url = require('url');
 var lib = require('../lib/index.js');
 var fs = require('fs');
-module.exports = function(app) {
-     /*
-        图片get请求的映射
-    */   
-    app.get("/public/images/:image",function(request,response) {
-      var imageName = "./public/images/"+request.params.image;
+var gm = require('gm');
+var imageMagick = gm.subClass({ imageMagick : true });
+
+function sendImg(imageName,request,response) {
       fs.readFile(imageName, "binary", function(error, file) { 
         if(error) { 
           response.writeHead(500, {"Content-Type": "text/plain"}); 
@@ -22,7 +20,24 @@ module.exports = function(app) {
           response.end(); 
         } 
       }); 
+}
 
+module.exports = function(app) {
+     /*
+        图片get请求的映射
+    */   
+    // imageMagick('./public/images/14649389070004509455628.jpg').resize(190,190,'!').autoOrient().write('./public/images/14649389070004509455628.jpg',function(err) {
+
+    // });
+    app.get("/public/images/:image",function(request,response) {
+      var imageName = "./public/images/"+request.params.image;
+      imageMagick(imageName).resize(250,250,'!').autoOrient().write(imageName,function(err) {
+          if(err) {
+            console.log(err);
+          }else {
+              sendImg(imageName,request,response);
+          }
+      });
     });
     /*
         失物招领注册逻辑
